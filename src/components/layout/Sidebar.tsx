@@ -71,15 +71,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* User Section */}
       <div className="p-5 border-t border-[var(--border)]">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-[var(--accent)] text-white flex items-center justify-center font-bold shadow-sm">
+        <Link
+          to="/settings"
+          className="flex items-center gap-3 mb-4 group rounded-xl p-2 -mx-2 hover:bg-[var(--sidebar-hover-bg)] transition-colors"
+          title="Go to Settings"
+        >
+          <div className="w-10 h-10 rounded-full bg-[var(--accent)] text-white flex items-center justify-center font-bold shadow-sm group-hover:ring-2 group-hover:ring-[var(--accent)]/40 transition-all">
             RK
           </div>
           <div>
             <p className="text-sm font-bold text-[var(--text-primary)]">Ravi Kumar</p>
-            <p className="text-xs text-[var(--text-secondary)]">Beekeeper</p>
+            <p className="text-xs text-[var(--text-secondary)]">Beekeeper · Settings ↗</p>
           </div>
-        </div>
+        </Link>
         
         <div className="bg-[var(--sidebar-hover-bg)] p-3 rounded-lg">
           <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">Your Apiary</p>

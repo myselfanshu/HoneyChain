@@ -267,34 +267,45 @@ const SettingsPage = () => {
                 <p className="text-xs text-[var(--text-secondary)]">Cryptographic credentials for automated sensor telemetry ingestion.</p>
               </div>
 
+              {/* Demo mode notice */}
+              <div className="p-3 rounded-xl bg-amber-500/8 border border-amber-500/20 flex items-start gap-2.5 text-xs">
+                <Shield size={15} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-amber-700 dark:text-amber-400">Demonstration Environment</p>
+                  <p className="text-[var(--text-secondary)] mt-0.5">No live IoT backend is connected. All credentials shown are placeholders for UI demonstration only. Do not enter real API keys here.</p>
+                </div>
+              </div>
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5">
                     Apiary Gateway API Key
                   </label>
                   <div className="flex items-center gap-2">
-                    <input 
-                      type="password" 
-                      readOnly 
-                      value="hc_live_9921f8a892b1847eac12004812"
-                      className="w-full text-xs font-mono text-[var(--text-primary)] px-3.5 py-2.5 bg-[var(--surface-secondary)] border border-[var(--border)] rounded-xl"
+                    <input
+                      type="password"
+                      readOnly
+                      value="hc_demo_••••••••••••••••"
+                      className="w-full text-xs font-mono text-[var(--text-secondary)] px-3.5 py-2.5 bg-[var(--surface-secondary)] border border-[var(--border)] rounded-xl cursor-not-allowed opacity-70"
                     />
-                    <button 
-                      onClick={() => alert('API Key copied to clipboard')}
-                      className="px-4 py-2.5 rounded-xl border border-[var(--border)] text-xs font-medium text-[var(--accent)] hover:bg-[var(--surface-secondary)]"
+                    <button
+                      disabled
+                      className="px-4 py-2.5 rounded-xl border border-[var(--border)] text-xs font-medium text-[var(--text-secondary)] cursor-not-allowed opacity-50"
+                      title="Not available in demo mode"
                     >
                       Copy
                     </button>
                   </div>
+                  <p className="text-[11px] text-[var(--text-secondary)] mt-1.5 italic">Real key management requires a live backend connection.</p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-[var(--surface-secondary)] border border-[var(--border)] text-xs space-y-2 text-[var(--text-secondary)]">
                   <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold">
                     <Shield size={16} className="text-[var(--accent)]" />
-                    <span>Blockchain Telemetry Node: Connected</span>
+                    <span>Blockchain Telemetry Node: Demo Mode</span>
                   </div>
-                  <p>Smart Contract Address: <span className="font-mono text-[var(--accent)]">0x7F91...3A12</span> (Polygon PoS Verification Contract)</p>
-                  <p>Sensor telemetry is automatically hashed into Merkle trees and anchored every 6 hours.</p>
+                  <p>Smart Contract Address: <span className="font-mono text-[var(--accent)]">0x7F91...3A12</span> (Polygon PoS — illustrative)</p>
+                  <p>In a live deployment, sensor telemetry would be automatically hashed into Merkle trees and anchored every 6 hours.</p>
                 </div>
               </div>
             </section>
