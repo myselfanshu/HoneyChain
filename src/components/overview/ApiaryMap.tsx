@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, ArrowRight } from 'lucide-react';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 interface HiveNode {
   id: string;
@@ -22,6 +23,7 @@ const hivesOnMap: HiveNode[] = [
 ];
 
 export const ApiaryMap: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [hoveredHive, setHoveredHive] = useState<HiveNode | null>(null);
 
@@ -34,14 +36,23 @@ export const ApiaryMap: React.FC = () => {
     }
   };
 
+  const getLocalizedStatus = (status: string) => {
+    switch (status) {
+      case 'Healthy': return t.common.healthy;
+      case 'Watch': return t.common.watch;
+      case 'Inspect': return t.common.inspect;
+      default: return status;
+    }
+  };
+
   return (
     <div className="bg-[var(--surface)] p-6 sm:p-7 rounded-3xl border border-[var(--border)] h-full flex flex-col justify-between shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <MapPin size={20} className="text-[var(--accent)]" />
-          <h3 className="text-xl font-serif font-bold text-[var(--text-primary)]">Apiary Spatial Map</h3>
+          <h3 className="text-xl font-serif font-bold text-[var(--text-primary)]">{t.overview.spatialMap}</h3>
         </div>
-        <span className="text-[11px] font-mono text-[var(--text-secondary)]">SECTOR A & B (7 NODES)</span>
+        <span className="text-[11px] font-mono text-[var(--text-secondary)]">{t.overview.sectorNodes}</span>
       </div>
 
       <div className="flex-1 rounded-2xl bg-[var(--surface-secondary)]/60 overflow-hidden relative min-h-[290px] border border-[var(--border)] flex items-center justify-center p-2">
@@ -112,26 +123,26 @@ export const ApiaryMap: React.FC = () => {
                 hoveredHive.status === 'Healthy' ? 'text-green-600 bg-green-500/10' :
                 hoveredHive.status === 'Watch' ? 'text-amber-500 bg-amber-500/10' : 'text-red-500 bg-red-500/10'
               }`}>
-                {hoveredHive.status}
+                {getLocalizedStatus(hoveredHive.status)}
               </span>
             </div>
-            <p className="text-[11px] text-[var(--text-secondary)]">Temp: {hoveredHive.temp}°C • {hoveredHive.weight} kg</p>
-            <p className="text-[10px] text-[var(--accent)] font-medium pt-0.5">Click to view telemetry →</p>
+            <p className="text-[11px] text-[var(--text-secondary)]">{t.smartHives.temp}: {hoveredHive.temp}°C • {hoveredHive.weight} kg</p>
+            <p className="text-[10px] text-[var(--accent)] font-medium pt-0.5">{t.overview.clickTelemetry}</p>
           </div>
         )}
       </div>
 
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-[var(--border)] text-xs text-[var(--text-secondary)]">
         <div className="flex gap-4">
-          <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[var(--success)]"></span> Healthy (4)</div>
-          <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[var(--warning)]"></span> Watch (2)</div>
-          <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[var(--danger)]"></span> Inspect (1)</div>
+          <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[var(--success)]"></span> {t.common.healthy} (4)</div>
+          <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[var(--warning)]"></span> {t.common.watch} (2)</div>
+          <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[var(--danger)]"></span> {t.common.inspect} (1)</div>
         </div>
         <button 
           onClick={() => navigate('/smart-hives')}
           className="text-[var(--accent)] hover:underline flex items-center gap-1 font-medium hidden sm:flex"
         >
-          <span>All 24 Hives</span>
+          <span>{t.overview.all24Hives}</span>
           <ArrowRight size={12} />
         </button>
       </div>

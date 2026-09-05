@@ -1,9 +1,12 @@
 import React from 'react';
 import HeroSection from '@/components/hero/HeroSection';
 import { Link } from 'react-router-dom';
-import { Box, Award, GitBranch, ShoppingBag, QrCode, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { Box, Award, GitBranch, QrCode, ArrowRight } from 'lucide-react';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const LandingPage: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="w-full min-h-screen bg-[var(--background)] text-[var(--text-primary)] space-y-16 pb-20 animate-fade-in">
       {/* Editorial Hero with Integrated 3D Visual & Core Pillars */}
@@ -13,13 +16,13 @@ const LandingPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs font-serif uppercase tracking-[0.25em] text-[var(--accent)] font-semibold block mb-2">
-            The Honey Chain Ecosystem
+            {t.hero.ecosystemTitle}
           </span>
           <h2 className="text-3xl sm:text-5xl font-serif font-bold text-[var(--text-primary)] tracking-tight">
-            How Every Drop Tells Its Story
+            {t.hero.ecosystemHeading}
           </h2>
           <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-3 leading-relaxed">
-            From intelligent hive monitoring across India to trusted honey verification at the dinner table.
+            {t.hero.ecosystemSubtitle}
           </p>
         </div>
 
@@ -34,17 +37,17 @@ const LandingPage: React.FC = () => {
                 <Box size={24} />
               </div>
               <span className="font-mono text-[10px] text-[var(--accent)] uppercase font-semibold block mb-1">
-                Telemetry & Journal
+                {t.hero.card1Badge}
               </span>
               <h3 className="text-xl font-serif font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors mb-2">
-                Smart Hives
+                {t.nav.smartHives}
               </h3>
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Acoustic frequency analysis, internal temperature, colony humidity, and automated swarm early warning indicators.
+                {t.hero.card1Desc}
               </p>
             </div>
             <div className="pt-6 mt-6 border-t border-[var(--border)] flex items-center justify-between text-xs font-semibold text-[var(--accent)]">
-              <span>Explore Apiary Hives</span>
+              <span>{t.hero.card1Button}</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
@@ -59,17 +62,17 @@ const LandingPage: React.FC = () => {
                 <Award size={24} />
               </div>
               <span className="font-mono text-[10px] text-[var(--accent)] uppercase font-semibold block mb-1">
-                Digital Certificate
+                {t.hero.card2Badge}
               </span>
               <h3 className="text-xl font-serif font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors mb-2">
-                Honey Passport
+                {t.nav.honeyPassport}
               </h3>
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Immutable origin certificates, floral pollen classification, moisture levels, HMF analysis, and 96/100 Trust Score.
+                {t.hero.card2Desc}
               </p>
             </div>
             <div className="pt-6 mt-6 border-t border-[var(--border)] flex items-center justify-between text-xs font-semibold text-[var(--accent)]">
-              <span>Inspect Batch HC-0142</span>
+              <span>{t.hero.card2Button}</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
@@ -84,17 +87,17 @@ const LandingPage: React.FC = () => {
                 <GitBranch size={24} />
               </div>
               <span className="font-mono text-[10px] text-[var(--accent)] uppercase font-semibold block mb-1">
-                Polygon PoS Consensus
+                {t.hero.card3Badge}
               </span>
               <h3 className="text-xl font-serif font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors mb-2">
-                Traceability
+                {t.nav.traceability}
               </h3>
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Chain of custody handoffs signed by beekeepers, labs, processors, and packers with verified transaction hashes.
+                {t.hero.card3Desc}
               </p>
             </div>
             <div className="pt-6 mt-6 border-t border-[var(--border)] flex items-center justify-between text-xs font-semibold text-[var(--accent)]">
-              <span>View Block Ledger</span>
+              <span>{t.hero.card3Button}</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
@@ -109,17 +112,17 @@ const LandingPage: React.FC = () => {
                 <QrCode size={24} />
               </div>
               <span className="font-mono text-[10px] text-[var(--accent)] uppercase font-semibold block mb-1">
-                Jar Label QR Scan
+                {t.hero.card4Badge}
               </span>
               <h3 className="text-xl font-serif font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors mb-2">
-                Consumer QR Story
+                {t.overview.qrStory}
               </h3>
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Scan the physical jar to instantly reveal batch origins, harvest timestamp, laboratory tests, and beekeeper notes.
+                {t.hero.card4Desc}
               </p>
             </div>
             <div className="pt-6 mt-6 border-t border-[var(--border)] flex items-center justify-between text-xs font-semibold text-[var(--accent)]">
-              <span>Open Mobile Preview</span>
+              <span>{t.hero.card4Button}</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>

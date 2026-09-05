@@ -6,6 +6,7 @@ import {
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { hives } from '@/data/hives';
 import { Modal } from '@/components/ui/Modal';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -225,13 +226,15 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
   };
 
   // ─────────────────────────────────────────────────────────────────────────
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-8 animate-fade-in pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pt-6">
       {/* Page header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-serif text-[var(--text-primary)]">Reports</h1>
-          <p className="text-[var(--text-secondary)] mt-1">Analytics, yields, and compliance documents.</p>
+          <h1 className="text-3xl font-serif text-[var(--text-primary)] font-bold">{t.reports.title}</h1>
+          <p className="text-[var(--text-secondary)] mt-1">{t.reports.subtitle}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -241,7 +244,7 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
             className="flex items-center px-4 py-2.5 bg-[var(--surface)] hover:bg-[var(--surface-secondary)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl text-sm font-medium transition-colors"
           >
             <ClipboardList className="w-4 h-4 mr-2 text-[var(--accent)]" />
-            Log Field Report
+            {t.reports.logFieldReport}
           </button>
 
           {/* Generate Report button */}
@@ -250,7 +253,7 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
             className="flex items-center px-4 py-2.5 bg-[var(--accent)] hover:opacity-90 text-white rounded-xl text-sm font-medium transition-opacity shadow-sm"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Generate Report
+            {t.reports.generateReport}
           </button>
         </div>
       </div>
@@ -260,33 +263,36 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex items-center gap-2 shrink-0">
             <Calendar className="w-4 h-4 text-[var(--accent)]" />
-            <span className="text-sm font-semibold text-[var(--text-primary)]">Date Range</span>
+            <span className="text-sm font-semibold text-[var(--text-primary)]">{t.reports.dateRange}</span>
           </div>
 
           {/* Preset pills */}
           <div className="flex flex-wrap gap-2">
-            {PRESETS.map((p) => (
-              <button
-                key={p.key}
-                onClick={() => setPreset(p.key)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                  preset === p.key
-                    ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
-                    : 'bg-[var(--surface-secondary)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
+            {PRESETS.map((p) => {
+              const label = p.key === '7d' ? t.reports.preset7d : p.key === '30d' ? t.reports.preset30d : p.key === '90d' ? t.reports.preset90d : t.reports.preset180d;
+              return (
+                <button
+                  key={p.key}
+                  onClick={() => setPreset(p.key)}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+                    preset === p.key
+                      ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
+                      : 'bg-[var(--surface-secondary)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
             <button
               onClick={() => setPreset('custom')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
                 preset === 'custom'
                   ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
                   : 'bg-[var(--surface-secondary)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
               }`}
             >
-              Custom
+              {t.reports.custom}
             </button>
           </div>
 
@@ -299,7 +305,7 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
                 onChange={(e) => setCustomFrom(e.target.value)}
                 className="text-xs bg-[var(--surface-secondary)] border border-[var(--border)] rounded-lg px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
               />
-              <span className="text-[var(--text-secondary)] text-xs">to</span>
+              <span className="text-[var(--text-secondary)] text-xs">{t.reports.to}</span>
               <input
                 type="date"
                 value={customTo}
@@ -308,9 +314,9 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
               />
               <button
                 onClick={handleCustomApply}
-                className="px-3 py-2 rounded-lg bg-[var(--accent)] text-white text-xs font-semibold hover:opacity-90 transition-opacity"
+                className="px-3 py-2 rounded-lg bg-[var(--accent)] text-white text-xs font-semibold hover:opacity-90 transition-opacity cursor-pointer"
               >
-                Apply
+                {t.reports.apply}
               </button>
               {customError && <span className="text-xs text-red-500">{customError}</span>}
             </div>
@@ -318,17 +324,17 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
         </div>
 
         <p className="mt-3 text-[11px] text-[var(--text-secondary)]">
-          Showing data for the last <strong>{activeDays} days</strong>. Min 7 days · Max 6 months.
+          {t.reports.subOverDays}: <strong>{activeDays}</strong> (Min 7 · Max 180).
         </p>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { icon: Activity, label: 'Hive Health', value: `${metrics.health}%`, sub: '↑ from last period', subColor: 'text-green-500' },
-          { icon: Droplet, label: 'Est. Total Yield', value: `${metrics.totalYield} kg`, sub: `Over ${activeDays} days`, subColor: 'text-[var(--text-secondary)]' },
-          { icon: Star, label: 'Quality Score', value: metrics.qualityScore, sub: 'Across tested batches', subColor: 'text-[var(--text-secondary)]' },
-          { icon: ShieldCheck, label: 'Verified Events', value: metrics.events.toLocaleString(), sub: '100% compliance rate', subColor: 'text-green-500' },
+          { icon: Activity, label: t.reports.hiveHealth, value: `${metrics.health}%`, sub: t.reports.subFromLast, subColor: 'text-green-500' },
+          { icon: Droplet, label: t.reports.totalYield, value: `${metrics.totalYield} ${t.common.kg}`, sub: `${activeDays} ${t.reports.subOverDays}`, subColor: 'text-[var(--text-secondary)]' },
+          { icon: Star, label: t.reports.qualityScore, value: metrics.qualityScore, sub: t.reports.subAcrossBatches, subColor: 'text-[var(--text-secondary)]' },
+          { icon: ShieldCheck, label: t.reports.verifiedEvents, value: metrics.events.toLocaleString(), sub: t.reports.subCompliance, subColor: 'text-green-500' },
         ].map(({ icon: Icon, label, value, sub, subColor }) => (
           <div key={label} className="bg-[var(--surface)] border border-[var(--border)] p-6 rounded-2xl shadow-sm">
             <div className="mb-4">
@@ -346,7 +352,7 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
       {/* Yield Chart */}
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
         <h2 className="text-lg font-serif text-[var(--text-primary)] mb-5">
-          Yield Trend — Last {activeDays} days
+          {t.reports.yieldTrend} — {activeDays} {t.reports.subOverDays}
         </h2>
         <div className="h-52">
           <ResponsiveContainer width="100%" height="100%">
@@ -357,14 +363,14 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
               <Tooltip
                 contentStyle={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)', borderRadius: '12px', fontSize: '12px' }}
                 itemStyle={{ color: 'var(--accent)' }}
-                formatter={(v: any) => [`${v} kg`, 'Yield']}
+                formatter={(v: any) => [`${v} ${t.common.kg}`, t.reports.yieldTooltip]}
               />
               <Bar dataKey="yield" fill="var(--accent)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
         <p className="text-[11px] text-[var(--text-secondary)] mt-3 italic">
-          Illustrative mock data. Metrics vary with selected date range.
+          {t.reports.mockDataNotice}
         </p>
       </div>
 
@@ -374,13 +380,13 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
           <button
             key={v}
             onClick={() => setActiveView(v)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeView === v
                 ? 'bg-[var(--surface)] text-[var(--accent)] shadow-xs'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
-            {v === 'reports' ? 'Recent Reports' : `Field Reports${fieldReports.length > 0 ? ` (${fieldReports.length})` : ''}`}
+            {v === 'reports' ? t.reports.recentReports : `${t.reports.fieldReports}${fieldReports.length > 0 ? ` (${fieldReports.length})` : ''}`}
           </button>
         ))}
       </div>
@@ -389,53 +395,56 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
       {activeView === 'reports' && (
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
           <div className="p-6 border-b border-[var(--border)] flex justify-between items-center">
-            <h2 className="text-xl font-serif text-[var(--text-primary)]">Recent Reports</h2>
+            <h2 className="text-xl font-serif text-[var(--text-primary)]">{t.reports.recentReports}</h2>
             <Filter className="w-5 h-5 text-[var(--text-secondary)]" />
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[var(--background)] border-b border-[var(--border)] text-[var(--text-secondary)] text-sm">
-                  <th className="py-4 px-6 font-medium">Report Name</th>
-                  <th className="py-4 px-6 font-medium">Period</th>
-                  <th className="py-4 px-6 font-medium">Generated</th>
-                  <th className="py-4 px-6 font-medium">Status</th>
-                  <th className="py-4 px-6 font-medium text-right">Actions</th>
+                  <th className="py-4 px-6 font-medium">{t.reports.reportName}</th>
+                  <th className="py-4 px-6 font-medium">{t.reports.period}</th>
+                  <th className="py-4 px-6 font-medium">{t.reports.generated}</th>
+                  <th className="py-4 px-6 font-medium">{t.common.status}</th>
+                  <th className="py-4 px-6 font-medium text-right">{t.common.actions}</th>
                 </tr>
               </thead>
               <tbody>
-                {SEED_REPORTS.map((report) => (
-                  <tr key={report.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--background)] transition-colors">
-                    <td className="py-4 px-6">
-                      <div className="flex items-center">
-                        <FileText className="w-4 h-4 text-[var(--accent)] mr-3 shrink-0" />
-                        <span className="font-medium text-[var(--text-primary)]">{report.name}</span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-6 text-sm text-[var(--text-secondary)]">{report.period}</td>
-                    <td className="py-4 px-6 text-sm text-[var(--text-secondary)]">{report.generated}</td>
-                    <td className="py-4 px-6">
-                      {report.status === 'Ready' ? (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600 border border-green-500/20">Ready</span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-500 border border-blue-500/20">Processing</span>
-                      )}
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <button
-                        disabled={report.status !== 'Ready'}
-                        className={`p-2 rounded-lg transition-colors ${
-                          report.status === 'Ready'
-                            ? 'text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-amber-500/10'
-                            : 'text-[var(--text-secondary)] opacity-30 cursor-not-allowed'
-                        }`}
-                        title="Download"
-                      >
-                        <Download className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {SEED_REPORTS.map((report, idx) => {
+                  const reportTitle = idx === 0 ? t.reports.report1Title : idx === 1 ? t.reports.report2Title : idx === 2 ? t.reports.report3Title : t.reports.report4Title;
+                  return (
+                    <tr key={report.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--background)] transition-colors">
+                      <td className="py-4 px-6">
+                        <div className="flex items-center">
+                          <FileText className="w-4 h-4 text-[var(--accent)] mr-3 shrink-0" />
+                          <span className="font-medium text-[var(--text-primary)]">{reportTitle}</span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6 text-sm text-[var(--text-secondary)]">{report.period}</td>
+                      <td className="py-4 px-6 text-sm text-[var(--text-secondary)]">{report.generated}</td>
+                      <td className="py-4 px-6">
+                        {report.status === 'Ready' ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600 border border-green-500/20">{t.reports.ready}</span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-500 border border-blue-500/20">{t.reports.processing}</span>
+                        )}
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <button
+                          disabled={report.status !== 'Ready'}
+                          className={`p-2 rounded-lg transition-colors ${
+                            report.status === 'Ready'
+                              ? 'text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-amber-500/10 cursor-pointer'
+                              : 'text-[var(--text-secondary)] opacity-30 cursor-not-allowed'
+                          }`}
+                          title={t.common.download}
+                        >
+                          <Download className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -446,20 +455,20 @@ environment. Metrics are illustrative only. Do not use for regulatory compliance
       {activeView === 'field' && (
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
           <div className="p-6 border-b border-[var(--border)] flex justify-between items-center">
-            <h2 className="text-xl font-serif text-[var(--text-primary)]">Field Reports</h2>
+            <h2 className="text-xl font-serif text-[var(--text-primary)]">{t.reports.fieldReports}</h2>
             <button
               onClick={() => setFieldModal(true)}
               className="flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)] hover:underline"
             >
-              <Plus size={14} /> Log new
+              <Plus size={14} /> {t.reports.logNew}
             </button>
           </div>
 
           {fieldReports.length === 0 ? (
             <div className="p-12 text-center text-[var(--text-secondary)]">
               <ClipboardList className="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p className="font-medium">No field reports yet.</p>
-              <p className="text-xs mt-1">Use "Log Field Report" to add your first observation.</p>
+              <p className="font-medium">{t.reports.noFieldReports}</p>
+              <p className="text-xs mt-1">{t.reports.noFieldReportsSub}</p>
             </div>
           ) : (
             <div className="divide-y divide-[var(--border)]">

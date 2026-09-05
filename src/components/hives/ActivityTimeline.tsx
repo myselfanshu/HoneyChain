@@ -1,5 +1,6 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const data = [
   { time: '03 AM', activity: 30 },
@@ -13,9 +14,11 @@ const data = [
 ];
 
 export const ActivityTimeline: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-[var(--background)] border border-[var(--border-color)] rounded-xl p-6 h-full">
-      <h3 className="font-serif text-lg text-[var(--text-primary)] font-bold mb-6">Activity Timeline (Today)</h3>
+      <h3 className="font-serif text-lg text-[var(--text-primary)] font-bold mb-6">{t.smartHives.activityTimeline}</h3>
       <div className="h-[250px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -33,9 +36,9 @@ export const ActivityTimeline: React.FC = () => {
               tickLine={false} 
               axisLine={false} 
               tickFormatter={(val) => {
-                if (val >= 80) return 'High';
-                if (val >= 40) return 'Med';
-                return 'Low';
+                if (val >= 80) return t.common.optimal;
+                if (val >= 40) return t.common.watch;
+                return t.common.inspect;
               }} 
             />
             <Tooltip 
@@ -49,7 +52,7 @@ export const ActivityTimeline: React.FC = () => {
       <div className="flex justify-center mt-4 text-xs text-[var(--text-secondary)]">
         <div className="flex items-center">
           <span className="w-3 h-3 rounded-full bg-amber-500 mr-2"></span>
-          Colony Activity
+          {t.smartHives.activity}
         </div>
       </div>
     </div>

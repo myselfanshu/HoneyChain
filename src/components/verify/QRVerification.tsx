@@ -1,18 +1,21 @@
 import React from 'react';
-import { CheckCircle2, QrCode, ArrowRight, ShieldCheck, Sparkles, Award } from 'lucide-react';
+import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 interface QRVerificationProps {
   batchId?: string;
 }
 
 export const QRVerification: React.FC<QRVerificationProps> = ({ batchId = 'HC-2026-0142' }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center">
       {/* Phone 1: Scan View */}
       <div className="flex flex-col items-center">
         <span className="text-xs font-serif uppercase tracking-widest text-[var(--accent)] font-semibold mb-3">
-          Consumer Verification (Mobile)
+          {t.consumer.mobileVerification}
         </span>
         
         {/* Smartphone Frame */}
@@ -25,9 +28,9 @@ export const QRVerification: React.FC<QRVerificationProps> = ({ batchId = 'HC-20
           {/* Screen Content */}
           <div className="flex-1 rounded-[30px] bg-[var(--surface)] p-5 flex flex-col items-center justify-between text-center overflow-hidden border border-[var(--border)]">
             <div className="pt-2">
-              <span className="font-serif font-bold text-xs tracking-wider text-[var(--text-secondary)] block">HONEY CHAIN</span>
+              <span className="font-serif font-bold text-xs tracking-wider text-[var(--text-secondary)] block">{t.common.brandFullName}</span>
               <h4 className="font-serif text-sm font-bold text-[var(--text-primary)] mt-1">
-                Scan the QR on your honey jar
+                {t.consumer.scanInstruction}
               </h4>
             </div>
 
@@ -81,9 +84,9 @@ export const QRVerification: React.FC<QRVerificationProps> = ({ batchId = 'HC-20
             {/* Verification Status Pill */}
             <div className="w-full bg-[var(--surface-secondary)] p-2.5 rounded-xl border border-[var(--border)]">
               <span className="font-mono text-xs font-bold text-[var(--accent)] block">{batchId}</span>
-              <div className="flex items-center justify-center gap-1 text-green-600 text-[11px] font-bold mt-0.5">
+              <div className="flex items-center justify-center gap-1 text-green-600 dark:text-green-400 text-[11px] font-bold mt-0.5">
                 <CheckCircle2 size={12} />
-                <span>VERIFIED BATCH ✓</span>
+                <span>{t.consumer.verifiedBatch} ✓</span>
               </div>
             </div>
           </div>
@@ -93,7 +96,7 @@ export const QRVerification: React.FC<QRVerificationProps> = ({ batchId = 'HC-20
       {/* Phone 2: Result View */}
       <div className="flex flex-col items-center">
         <span className="text-xs font-serif uppercase tracking-widest text-[var(--accent)] font-semibold mb-3">
-          Verification Result
+          {t.consumer.verificationResult}
         </span>
         
         {/* Smartphone Frame */}
@@ -108,14 +111,14 @@ export const QRVerification: React.FC<QRVerificationProps> = ({ batchId = 'HC-20
             <div className="space-y-1">
               <div className="inline-flex items-center gap-1 text-green-700 dark:text-green-400 bg-green-500/10 px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-green-500/20">
                 <CheckCircle2 size={11} />
-                <span>VERIFIED BATCH</span>
+                <span>{t.consumer.verifiedBatch}</span>
               </div>
               <span className="font-mono text-[10px] text-[var(--text-secondary)] block uppercase tracking-wider">
-                BATCH ID: {batchId}
+                {t.consumer.batchId}: {batchId}
               </span>
               <h3 className="font-serif font-bold text-lg text-[var(--text-primary)]">MUSTARD GOLD</h3>
-              <p className="text-[11px] text-[var(--text-secondary)]">Uttar Pradesh • Mustard</p>
-              <p className="text-[10px] text-[var(--accent)] font-medium">Harvested on 28 Aug 2026</p>
+              <p className="text-[11px] text-[var(--text-secondary)]">{t.market.locationUP} • {t.market.floralMustard}</p>
+              <p className="text-[10px] text-[var(--accent)] font-medium">{t.consumer.harvestedOn} 28 Aug 2026</p>
             </div>
 
             {/* Honey Jar Visual on Coaster */}
@@ -153,8 +156,8 @@ export const QRVerification: React.FC<QRVerificationProps> = ({ batchId = 'HC-20
               to={`/honey-passport/${batchId}`}
               className="w-full py-2.5 px-4 rounded-xl bg-[var(--accent)] text-white font-medium text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5 shadow-sm"
             >
-              <span>View Full Story & Certificate</span>
-              <ArrowRight size={13} />
+              <span className="truncate">{t.consumer.viewFullStory}</span>
+              <ArrowRight size={13} className="shrink-0" />
             </Link>
           </div>
         </div>

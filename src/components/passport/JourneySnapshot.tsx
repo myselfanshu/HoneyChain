@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Home, Droplet, ShieldCheck, Factory, Package, ShoppingBag, Check, X } from 'lucide-react';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 interface Step {
   id: number;
@@ -115,6 +116,7 @@ const steps: Step[] = [
 ];
 
 export const JourneySnapshot: React.FC = () => {
+  const { t } = useTranslation();
   const [activeStep, setActiveStep] = useState<number | null>(null);
 
   const activeStepData = steps.find((s) => s.id === activeStep);
@@ -127,14 +129,14 @@ export const JourneySnapshot: React.FC = () => {
     <div className="w-full mt-8 p-6 sm:p-8 rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-sm">
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-[var(--border)]">
         <div>
-          <h3 className="text-xl font-serif font-bold text-[var(--text-primary)]">Journey Snapshot</h3>
+          <h3 className="text-xl font-serif font-bold text-[var(--text-primary)]">{t.passport.journeySnapshot}</h3>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-            Click any stage to inspect its sealed data.
+            {t.traceability.supplyChainJourney}
           </p>
         </div>
         <div className="flex items-center gap-1.5 text-xs text-[var(--accent)] font-medium bg-[var(--surface-secondary)] px-3 py-1 rounded-full border border-[var(--border)]">
           <Check size={14} />
-          <span>All 6 Milestones Sealed</span>
+          <span>6 {t.common.verified}</span>
         </div>
       </div>
 

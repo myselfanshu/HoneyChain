@@ -3,8 +3,10 @@ import { TraceabilityTimeline } from '@/components/traceability/TraceabilityTime
 import { ActorsInvolved } from '@/components/traceability/ActorsInvolved';
 import { ExternalLink, GitBranch, ShieldCheck } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export const TraceabilityPage: React.FC = () => {
+  const { t } = useTranslation();
   const [isContractModalOpen, setIsContractModalOpen] = useState(false);
 
   return (
@@ -15,9 +17,9 @@ export const TraceabilityPage: React.FC = () => {
             <GitBranch size={22} />
           </div>
           <div>
-            <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[var(--text-primary)]">Traceability</h1>
+            <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[var(--text-primary)]">{t.traceability.title}</h1>
             <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-0.5">
-              Blockchain-verified chain of custody and sensor verification history.
+              {t.traceability.subtitle}
             </p>
           </div>
         </div>
@@ -26,7 +28,7 @@ export const TraceabilityPage: React.FC = () => {
           onClick={() => setIsContractModalOpen(true)}
           className="flex items-center gap-2 text-[var(--accent)] hover:opacity-90 transition-opacity font-medium bg-[var(--surface-secondary)] border border-[var(--border)] px-4 py-2.5 rounded-xl text-sm self-start sm:self-auto shadow-sm"
         >
-          <span>View Smart Contract</span>
+          <span>{t.traceability.viewSmartContract}</span>
           <ExternalLink size={15} />
         </button>
       </div>
@@ -45,22 +47,22 @@ export const TraceabilityPage: React.FC = () => {
       <Modal
         isOpen={isContractModalOpen}
         onClose={() => setIsContractModalOpen(false)}
-        title="Honey Chain Verification Smart Contract"
+        title={t.traceability.contractTitle}
       >
         <div className="space-y-4 text-xs font-sans">
           <div className="p-3 bg-[var(--surface-secondary)] rounded-xl border border-[var(--border)]">
             <div className="flex items-center gap-2 text-[var(--accent)] font-semibold mb-1">
               <ShieldCheck size={16} />
-              <span>Contract Standard: ERC-721 + EIP-5564 Provenance</span>
+              <span>{t.traceability.contractStandard}</span>
             </div>
             <p className="text-[var(--text-secondary)]">
-              This contract issues a non-fungible provenance token for every certified honey batch upon lab verification.
+              {t.traceability.contractDesc}
             </p>
           </div>
 
           <div className="space-y-2 text-[var(--text-secondary)]">
             <div>
-              <span className="font-semibold text-[var(--text-primary)] uppercase tracking-wider text-[10px] block">Contract Address</span>
+              <span className="font-semibold text-[var(--text-primary)] uppercase tracking-wider text-[10px] block">{t.traceability.contractAddress}</span>
               <span className="font-mono text-[var(--text-primary)] bg-[var(--surface-secondary)] p-2 rounded-lg block select-all border border-[var(--border)]">
                 0x8eA21b7987E8F08Ac17691238BaF190119283
               </span>
@@ -68,12 +70,12 @@ export const TraceabilityPage: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-2">
               <div className="p-2.5 bg-[var(--surface-secondary)] rounded-xl border border-[var(--border)]">
-                <span className="text-[10px] uppercase font-semibold block">Network</span>
+                <span className="text-[10px] uppercase font-semibold block">{t.traceability.network}</span>
                 <span className="font-bold text-[var(--text-primary)]">Polygon PoS Mainnet</span>
               </div>
               <div className="p-2.5 bg-[var(--surface-secondary)] rounded-xl border border-[var(--border)]">
-                <span className="text-[10px] uppercase font-semibold block">Consensus Status</span>
-                <span className="font-bold text-green-600">Active & Syncing</span>
+                <span className="text-[10px] uppercase font-semibold block">{t.traceability.consensusStatus}</span>
+                <span className="font-bold text-green-600">{t.traceability.activeSyncing}</span>
               </div>
             </div>
           </div>
@@ -83,7 +85,7 @@ export const TraceabilityPage: React.FC = () => {
               onClick={() => setIsContractModalOpen(false)}
               className="px-4 py-2 rounded-xl bg-[var(--accent)] text-white font-medium hover:opacity-90 text-xs"
             >
-              Close
+              {t.common.close}
             </button>
           </div>
         </div>

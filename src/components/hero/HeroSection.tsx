@@ -2,8 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowDown, Play, Route, ShieldCheck, Sparkles, HeartHandshake } from 'lucide-react';
 import HeroVisual3D from './HeroVisual3D';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const HeroSection: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative w-full min-h-[88vh] flex flex-col justify-between px-4 sm:px-6 lg:px-8 pt-8 pb-12 overflow-hidden max-w-7xl mx-auto">
       {/* Top Bar / Intro Trigger */}
@@ -13,7 +16,7 @@ const HeroSection: React.FC = () => {
           className="flex items-center gap-2 text-xs font-mono text-[var(--text-secondary)] bg-[var(--surface)] hover:bg-[var(--surface-secondary)] px-4 py-2 rounded-full border border-[var(--border)] transition-all shadow-xs hover:border-[var(--accent)]"
         >
           <Play size={11} className="text-[var(--accent)] fill-[var(--accent)]" />
-          <span>Watch Provenance Journey</span>
+          <span>{t.hero.watchJourney}</span>
           <span className="text-[var(--accent)] font-bold">›</span>
         </Link>
       </div>
@@ -23,12 +26,12 @@ const HeroSection: React.FC = () => {
         {/* Left Column: Editorial Headline & Actions */}
         <div className="lg:col-span-6 flex flex-col items-start z-10 space-y-6">
           <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl leading-[1.05] text-[var(--text-primary)] font-bold tracking-tight">
-            EVERY DROP<br />
-            <span className="text-[var(--accent)] font-serif">HAS A STORY.</span>
+            {t.hero.taglineLead}<br />
+            <span className="text-[var(--accent)] font-serif">{t.hero.taglineSub}</span>
           </h1>
 
           <p className="font-sans text-base sm:text-lg text-[var(--text-secondary)] max-w-lg leading-relaxed">
-            Honey Chain connects beekeepers, hives and consumers through transparency, intelligence and trust.
+            {t.hero.subtitle}
           </p>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-3 w-full sm:w-auto">
@@ -36,14 +39,14 @@ const HeroSection: React.FC = () => {
               to="/overview"
               className="px-8 py-3.5 bg-[var(--accent)] text-white font-sans font-bold tracking-widest text-xs uppercase rounded-full flex items-center justify-center gap-2 hover:opacity-95 shadow-md shadow-amber-500/20 hover:shadow-lg transition-all"
             >
-              <span>EXPLORE PLATFORM</span>
+              <span>{t.hero.explorePlatform}</span>
               <ArrowRight size={15} />
             </Link>
             <Link
               to="/verify/HC-2026-0142"
               className="px-8 py-3.5 border border-[var(--border)] text-[var(--text-primary)] bg-[var(--surface)] font-sans font-bold tracking-widest text-xs uppercase rounded-full flex items-center justify-center hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all shadow-xs"
             >
-              <span>VERIFY A BATCH</span>
+              <span>{t.hero.verifyBatch}</span>
             </Link>
           </div>
 
@@ -65,33 +68,33 @@ const HeroSection: React.FC = () => {
         <div className="p-4 rounded-2xl bg-[var(--surface)]/50 border border-[var(--border)] flex flex-col gap-1.5 hover:border-[var(--accent)]/50 transition-colors">
           <div className="flex items-center gap-2 text-[var(--accent)]">
             <Route size={16} />
-            <span className="font-mono text-xs uppercase font-bold tracking-wider">TRACE</span>
+            <span className="font-mono text-xs uppercase font-bold tracking-wider">{t.hero.traceTitle}</span>
           </div>
-          <p className="text-xs text-[var(--text-secondary)]">Every action is immutably recorded.</p>
+          <p className="text-xs text-[var(--text-secondary)]">{t.hero.traceDesc}</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-[var(--surface)]/50 border border-[var(--border)] flex flex-col gap-1.5 hover:border-[var(--accent)]/50 transition-colors">
           <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
             <ShieldCheck size={16} />
-            <span className="font-mono text-xs uppercase font-bold tracking-wider">VERIFY</span>
+            <span className="font-mono text-xs uppercase font-bold tracking-wider">{t.hero.verifyTitle}</span>
           </div>
-          <p className="text-xs text-[var(--text-secondary)]">Every batch is lab & consensus verified.</p>
+          <p className="text-xs text-[var(--text-secondary)]">{t.hero.verifyDesc}</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-[var(--surface)]/50 border border-[var(--border)] flex flex-col gap-1.5 hover:border-[var(--accent)]/50 transition-colors">
           <div className="flex items-center gap-2 text-[var(--accent)]">
             <Sparkles size={16} />
-            <span className="font-mono text-xs uppercase font-bold tracking-wider">PREDICT</span>
+            <span className="font-mono text-xs uppercase font-bold tracking-wider">{t.hero.predictTitle}</span>
           </div>
-          <p className="text-xs text-[var(--text-secondary)]">Acoustic insights for healthier hives.</p>
+          <p className="text-xs text-[var(--text-secondary)]">{t.hero.predictDesc}</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-[var(--surface)]/50 border border-[var(--border)] flex flex-col gap-1.5 hover:border-[var(--accent)]/50 transition-colors">
           <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
             <HeartHandshake size={16} />
-            <span className="font-mono text-xs uppercase font-bold tracking-wider">CONNECT</span>
+            <span className="font-mono text-xs uppercase font-bold tracking-wider">{t.hero.connectTitle}</span>
           </div>
-          <p className="text-xs text-[var(--text-secondary)]">From pristine apiaries to table.</p>
+          <p className="text-xs text-[var(--text-secondary)]">{t.hero.connectDesc}</p>
         </div>
       </div>
     </section>

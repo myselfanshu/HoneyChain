@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export interface TrustScoreProps {
   score: number;
@@ -8,6 +9,7 @@ export interface TrustScoreProps {
 }
 
 export function TrustScore({ score, maxScore = 100, size = 'md', className = '' }: TrustScoreProps) {
+  const { t } = useTranslation();
   const percentage = Math.min(100, Math.max(0, (score / maxScore) * 100));
   
   // Size configurations
@@ -24,10 +26,10 @@ export function TrustScore({ score, maxScore = 100, size = 'md', className = '' 
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
   
   const getLabel = (s: number) => {
-    if (s >= 90) return 'Excellent';
-    if (s >= 75) return 'Good';
-    if (s >= 50) return 'Fair';
-    return 'Needs Attention';
+    if (s >= 90) return t.common.excellent;
+    if (s >= 75) return t.common.good;
+    if (s >= 50) return t.common.fair;
+    return t.common.needsAttention;
   };
 
   return (

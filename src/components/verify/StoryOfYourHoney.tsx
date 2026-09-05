@@ -1,19 +1,21 @@
 import React from 'react';
-import { Home, Droplet, ShieldCheck, Factory, Package, ShoppingCart, Heart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Home, Droplet, ShieldCheck, Factory, Package, ShoppingCart } from 'lucide-react';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 interface StoryProps {
   batchId?: string;
 }
 
 export const StoryOfYourHoney: React.FC<StoryProps> = ({ batchId = 'HC-2026-0142' }) => {
+  const { t } = useTranslation();
+
   const journeySteps = [
-    { icon: Home, label: 'Hive', sub: 'H-104', active: true },
-    { icon: Droplet, label: 'Harvested', sub: '28 Aug', active: true },
-    { icon: ShieldCheck, label: 'Verified', sub: 'Grade A', active: true },
-    { icon: Factory, label: 'Processed', sub: '29 Aug', active: true },
-    { icon: Package, label: 'Packaged', sub: '30 Aug', active: true },
-    { icon: ShoppingCart, label: 'Market', sub: '31 Aug', active: true }
+    { icon: Home, label: t.consumer.stageHive, sub: 'H-104', active: true },
+    { icon: Droplet, label: t.consumer.stageHarvested, sub: '28 Aug', active: true },
+    { icon: ShieldCheck, label: t.consumer.stageVerified, sub: 'Grade A', active: true },
+    { icon: Factory, label: t.consumer.stageProcessed, sub: '29 Aug', active: true },
+    { icon: Package, label: t.consumer.stagePackaged, sub: '30 Aug', active: true },
+    { icon: ShoppingCart, label: t.consumer.stageMarket, sub: '31 Aug', active: true }
   ];
 
   return (
@@ -21,12 +23,12 @@ export const StoryOfYourHoney: React.FC<StoryProps> = ({ batchId = 'HC-2026-0142
       <div>
         <div className="text-center mb-8 pb-4 border-b border-[var(--border)]">
           <span className="text-xs font-serif uppercase tracking-[0.2em] text-[var(--accent)] font-semibold block">
-            Batch #{batchId}
+            {t.consumer.batchId} #{batchId}
           </span>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[var(--text-primary)] mt-1">
-            The Story of Your Honey
+            {t.consumer.storyTitle}
           </h2>
-          <p className="text-xs text-[var(--text-secondary)] mt-1">Every drop is recorded, verified, and trusted.</p>
+          <p className="text-xs text-[var(--text-secondary)] mt-1">{t.consumer.storySubtitle}</p>
         </div>
         
         {/* Horizontal 6-Stage Timeline */}
@@ -42,7 +44,7 @@ export const StoryOfYourHoney: React.FC<StoryProps> = ({ batchId = 'HC-2026-0142
                     <Icon className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-serif font-bold text-[var(--text-primary)]">{step.label}</p>
+                    <p className="text-xs font-serif font-bold text-[var(--text-primary)] truncate max-w-[80px]">{step.label}</p>
                     <p className="text-[10px] text-[var(--accent)] font-medium mt-0.5">{step.sub}</p>
                   </div>
                 </div>
@@ -66,18 +68,19 @@ export const StoryOfYourHoney: React.FC<StoryProps> = ({ batchId = 'HC-2026-0142
             </svg>
           </div>
 
+          {/* Pan-India Story Statement in Active Language */}
           <p className="text-base sm:text-lg text-[var(--text-primary)] max-w-md mx-auto leading-relaxed italic font-serif">
-            “From the mustard fields of Uttar Pradesh to your table, every step is recorded, verified and trusted.”
+            “{t.consumer.storyStatement}”
           </p>
 
           <div className="mt-4 inline-flex items-center gap-2 text-xs font-mono text-[var(--accent)] font-semibold uppercase tracking-wider bg-[var(--surface)]/80 backdrop-blur-xs px-3 py-1 rounded-full border border-[var(--border)]">
-            <span>Apiary Location: 27.1767° N, 78.0081° E</span>
+            <span>{t.consumer.apiaryCoordinates}: 27.1767° N, 78.0081° E</span>
           </div>
         </div>
       </div>
 
       <div className="text-center pt-4 border-t border-[var(--border)] text-xs text-[var(--text-secondary)] font-medium tracking-wide">
-        THANK YOU FOR SUPPORTING TRANSPARENT HONEY. 🐝
+        {t.consumer.thankYou}
       </div>
     </div>
   );

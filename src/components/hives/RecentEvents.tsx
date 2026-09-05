@@ -1,16 +1,19 @@
 import React from 'react';
-
-const events = [
-  { id: 1, time: '08:42 AM', desc: 'Weight recorded: 42.1 kg' },
-  { id: 2, time: '08:31 AM', desc: 'Temperature normal: 32.8 °C' },
-  { id: 3, time: '08:16 AM', desc: 'High activity' },
-  { id: 4, time: '07:52 AM', desc: 'Humidity stable: 58%' },
-];
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export const RecentEvents: React.FC = () => {
+  const { t } = useTranslation();
+
+  const events = [
+    { id: 1, time: '08:42 AM', desc: t.smartHives.evWeight },
+    { id: 2, time: '08:31 AM', desc: t.smartHives.evTemp },
+    { id: 3, time: '08:16 AM', desc: t.smartHives.evActivity },
+    { id: 4, time: '07:52 AM', desc: t.smartHives.evHumidity },
+  ];
+
   return (
     <div className="bg-[var(--background)] border border-[var(--border-color)] rounded-xl p-6 h-full flex flex-col">
-      <h3 className="font-serif text-lg text-[var(--text-primary)] font-bold mb-6">Recent Events</h3>
+      <h3 className="font-serif text-lg text-[var(--text-primary)] font-bold mb-6">{t.smartHives.recentEvents}</h3>
       <div className="flex-1 space-y-4">
         {events.map((event) => (
           <div key={event.id} className="flex items-start">
@@ -23,8 +26,8 @@ export const RecentEvents: React.FC = () => {
           </div>
         ))}
       </div>
-      <button className="mt-6 text-amber-600 hover:text-amber-700 dark:text-amber-500 dark:hover:text-amber-400 text-sm font-medium text-left">
-        View All Events →
+      <button className="mt-6 text-amber-600 hover:text-amber-700 dark:text-amber-500 dark:hover:text-amber-400 text-sm font-medium text-left cursor-pointer">
+        {t.smartHives.allEvents}
       </button>
     </div>
   );

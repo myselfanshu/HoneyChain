@@ -1,20 +1,23 @@
 import React from 'react';
 import { User, Factory, Package, Truck, Store, CheckCircle } from 'lucide-react';
-
-const actors = [
-  { role: 'Beekeeper', name: 'Ravi Kumar', station: 'Royal Crest Apiaries (UP)', icon: User },
-  { role: 'Processor', name: 'HoneyPure Pvt. Ltd.', station: 'Haryana Facility', icon: Factory },
-  { role: 'Packer', name: 'PurePack Industries', station: 'Delhi Packaging Hub', icon: Package },
-  { role: 'Distributor', name: 'GreenHive Supplies', station: 'Maharashtra Logistics', icon: Truck },
-  { role: 'Retailer', name: "Nature's Basket", station: 'Pan-India Distribution', icon: Store },
-];
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export const ActorsInvolved: React.FC = () => {
+  const { t } = useTranslation();
+
+  const actors = [
+    { role: t.traceability.roleBeekeeper, name: 'Ravi Kumar', station: 'Royal Crest Apiaries (UP)', icon: User },
+    { role: t.traceability.roleProcessor, name: 'HoneyPure Pvt. Ltd.', station: 'Haryana Facility', icon: Factory },
+    { role: t.traceability.rolePacker, name: 'PurePack Industries', station: 'Delhi Packaging Hub', icon: Package },
+    { role: t.traceability.roleDistributor, name: 'GreenHive Supplies', station: 'Maharashtra Logistics', icon: Truck },
+    { role: t.traceability.roleRetailer, name: "Nature's Basket", station: 'Pan-India Distribution', icon: Store },
+  ];
+
   return (
     <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 shadow-sm">
       <div className="pb-4 mb-6 border-b border-[var(--border)]">
-        <h3 className="text-xl font-serif font-bold text-[var(--text-primary)]">Actors Involved</h3>
-        <p className="text-xs text-[var(--text-secondary)] mt-0.5">Verified custodian signatures across chain.</p>
+        <h3 className="text-xl font-serif font-bold text-[var(--text-primary)]">{t.traceability.actorsInvolved}</h3>
+        <p className="text-xs text-[var(--text-secondary)] mt-0.5">{t.traceability.actorsSubtitle}</p>
       </div>
 
       <div className="space-y-4">
@@ -32,7 +35,7 @@ export const ActorsInvolved: React.FC = () => {
                   <div className="text-[11px] text-[var(--text-secondary)]">{actor.station}</div>
                 </div>
               </div>
-              <div className="text-green-600 dark:text-green-400" title="Key Authenticated">
+              <div className="text-green-600 dark:text-green-400" title={t.common.verified}>
                 <CheckCircle size={16} />
               </div>
             </div>

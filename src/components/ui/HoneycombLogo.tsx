@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export interface HoneycombLogoProps {
   size?: number;
@@ -11,6 +12,8 @@ export const HoneycombLogo: React.FC<HoneycombLogoProps> = ({
   className = '',
   showWordmark = false
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className={`inline-flex items-center gap-3 ${className}`}>
       {/* Precision Geometric Mark: Honeycomb + Interlocking Provenance Chain Link + Honey Droplet */}
@@ -81,10 +84,10 @@ export const HoneycombLogo: React.FC<HoneycombLogoProps> = ({
       {showWordmark && (
         <div className="flex flex-col">
           <span className="font-serif font-bold text-lg leading-none tracking-wide text-[var(--text-primary)]">
-            HONEY
+            {t.common.brandName}
           </span>
           <span className="font-sans text-[0.62rem] font-bold tracking-[0.25em] text-[var(--accent)] mt-1">
-            CHAIN
+            {t.common.brandSub}
           </span>
         </div>
       )}

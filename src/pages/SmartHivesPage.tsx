@@ -2,15 +2,22 @@ import React, { useState } from 'react';
 import { HiveCard } from '@/components/hives/HiveCard';
 import { hives } from '@/data/hives';
 import { FilterPills } from '@/components/ui/FilterPills';
-import { Plus, Box } from 'lucide-react';
+import { Box } from 'lucide-react';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export const SmartHivesPage: React.FC = () => {
-  const [filter, setFilter] = useState('All');
+  const { t } = useTranslation();
+  const [filter, setFilter] = useState('all');
 
-  const filterOptions = ['All', 'Healthy', 'Watch', 'Inspect'];
+  const filterOptions = [
+    { key: 'all', label: t.common.all },
+    { key: 'healthy', label: t.common.healthy },
+    { key: 'watch', label: t.common.watch },
+    { key: 'inspect', label: t.common.inspect },
+  ];
 
   const filteredHives = hives.filter(hive => {
-    if (filter === 'All') return true;
+    if (filter === 'all') return true;
     return hive.status.toLowerCase() === filter.toLowerCase();
   });
 
@@ -23,20 +30,28 @@ export const SmartHivesPage: React.FC = () => {
               <Box size={22} />
             </div>
             <div>
-              <h1 className="text-3xl sm:text-4xl font-serif text-[var(--text-primary)] font-bold">Smart Hives</h1>
+              <h1 className="text-3xl sm:text-4xl font-serif text-[var(--text-primary)] font-bold">{t.smartHives.title}</h1>
               <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-0.5">
-                Digital field journal & real-time telemetry across {hives.length} active colonies.
+                {t.smartHives.subtitle}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <FilterPills 
-            options={filterOptions} 
-            selected={filter} 
-            onChange={setFilter} 
-          />
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          {filterOptions.map((opt) => (
+            <button
+              key={opt.key}
+              onClick={() => setFilter(opt.key)}
+              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                filter === opt.key
+                  ? 'bg-[var(--accent)] text-white shadow-xs'
+                  : 'bg-[var(--surface)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
         </div>
       </div>
       

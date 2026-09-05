@@ -7,8 +7,10 @@ import AIObservation from '@/components/overview/AIObservation';
 import RecentActivity from '@/components/overview/RecentActivity';
 import { batches } from '@/data';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const OverviewPage: React.FC = () => {
+  const { t } = useTranslation();
   const activeBatch = batches[0]!;
 
   return (
@@ -17,11 +19,10 @@ const OverviewPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="min-w-0">
           <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[var(--text-primary)] mb-1 break-words">
-            Good morning, Ravi!
+            {t.overview.greeting}
           </h1>
           <p className="font-sans text-[var(--text-secondary)] text-sm sm:text-base">
-            Your apiary is <span className="text-[var(--success)] font-semibold">87% healthy</span> today.
-            21 of 24 colonies within optimal acoustic thresholds.
+            {t.overview.healthSummary}
           </p>
         </div>
 
@@ -35,28 +36,28 @@ const OverviewPage: React.FC = () => {
       {/* Row 1: 4 Core Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
-          title="Hives Monitored"
+          title={t.overview.hivesMonitored}
           value="24"
-          trend="↑ 2 from last week"
+          trend={t.overview.trendHives}
           trendUp={true}
         />
         <MetricCard
-          title="Healthy Colonies"
+          title={t.overview.healthyColonies}
           value="21"
-          trend="87% of total"
+          trend={t.overview.trendColonies}
           trendUp={true}
         />
         <MetricCard
-          title="Expected Yield"
+          title={t.overview.expectedYield}
           value="186.4 kg"
-          trend="↑ 12.8% this cycle"
+          trend={t.overview.trendYield}
           trendUp={true}
         />
 
         {/* Trust Score Card */}
         <div className="bg-[var(--surface)] p-5 rounded-xl border border-[var(--border)] flex flex-col justify-between shadow-xs hover:border-[var(--accent)] transition-colors">
           <div className="flex justify-between items-start">
-            <h4 className="font-sans text-sm font-medium text-[var(--text-secondary)]">Trust Score</h4>
+            <h4 className="font-sans text-sm font-medium text-[var(--text-secondary)]">{t.overview.trustScore}</h4>
             <ShieldCheck className="w-5 h-5 text-[var(--accent)] shrink-0" />
           </div>
           <div className="flex items-baseline gap-1 my-1">
@@ -64,8 +65,8 @@ const OverviewPage: React.FC = () => {
           </div>
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className="font-medium text-green-600 dark:text-green-400">Excellent</span>
-              <span className="text-[var(--text-secondary)] font-mono">Consensus verified</span>
+              <span className="font-medium text-green-600 dark:text-green-400">{t.common.excellent}</span>
+              <span className="text-[var(--text-secondary)] font-mono">{t.overview.consensusVerified}</span>
             </div>
             <div className="w-full bg-[var(--surface-secondary)] h-1.5 rounded-full overflow-hidden border border-[var(--border)]">
               <div className="bg-[var(--accent)] h-full rounded-full w-[96%]" />
@@ -74,12 +75,7 @@ const OverviewPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Row 2: Apiary Map | Live Conditions | Observation
-          ─────────────────────────────────────────────────
-          KEY LAYOUT RULE: items-start (not items-stretch) so the ApiaryMap
-          column has a fixed natural height and the AIObservation card can
-          grow internally without stretching the map. On mobile the columns
-          stack normally. */}
+      {/* Row 2: Apiary Map | Live Conditions | Observation */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:items-start">
         {/* Apiary Map — natural height, never stretched by neighbours */}
         <div className="lg:col-span-6">
@@ -91,9 +87,7 @@ const OverviewPage: React.FC = () => {
           <LiveConditions />
         </div>
 
-        {/* Observation / Recommendation
-            Uses self-contained scroll for the expanded recommendation so it
-            never pushes the neighbouring map column. */}
+        {/* Observation / Recommendation */}
         <div className="lg:col-span-3">
           <AIObservation />
         </div>
@@ -112,7 +106,7 @@ const OverviewPage: React.FC = () => {
               <div className="flex items-center gap-2 text-[var(--accent)] min-w-0">
                 <Award size={18} className="shrink-0" />
                 <h3 className="text-lg font-serif font-bold text-[var(--text-primary)] truncate">
-                  Active Certified Harvest
+                  {t.overview.activeHarvest}
                 </h3>
               </div>
               <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20 font-semibold shrink-0">
@@ -122,26 +116,25 @@ const OverviewPage: React.FC = () => {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
               <div className="p-3 bg-[var(--surface-secondary)] rounded-xl border border-[var(--border)] min-w-0">
-                <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Honey Variety</span>
+                <span className="text-[10px] text-[var(--text-secondary)] uppercase block">{t.overview.honeyVariety}</span>
                 <span className="text-sm font-serif font-bold text-[var(--text-primary)] truncate block">{activeBatch.name}</span>
               </div>
               <div className="p-3 bg-[var(--surface-secondary)] rounded-xl border border-[var(--border)] min-w-0">
-                <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Origin Hive</span>
+                <span className="text-[10px] text-[var(--text-secondary)] uppercase block">{t.overview.originHive}</span>
                 <span className="text-sm font-serif font-bold text-[var(--accent)] block">{activeBatch.hiveId}</span>
               </div>
               <div className="p-3 bg-[var(--surface-secondary)] rounded-xl border border-[var(--border)] min-w-0">
-                <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Batch Mass</span>
+                <span className="text-[10px] text-[var(--text-secondary)] uppercase block">{t.overview.batchMass}</span>
                 <span className="text-sm font-serif font-bold text-[var(--text-primary)] block">{activeBatch.weightKg} kg</span>
               </div>
               <div className="p-3 bg-[var(--surface-secondary)] rounded-xl border border-[var(--border)] min-w-0">
-                <span className="text-[10px] text-[var(--text-secondary)] uppercase block">Lab Moisture</span>
+                <span className="text-[10px] text-[var(--text-secondary)] uppercase block">{t.overview.labMoisture}</span>
                 <span className="text-sm font-serif font-bold text-green-600 block">{activeBatch.passport.moisture}%</span>
               </div>
             </div>
 
             <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-              Harvested on 28 Aug 2026 from Northern Field mustard blooms.
-              All 5 supply chain handoffs sealed on Polygon PoS.
+              {t.overview.harvestStory}
             </p>
           </div>
 
@@ -150,14 +143,14 @@ const OverviewPage: React.FC = () => {
               to={`/honey-passport/${activeBatch.id}`}
               className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-[var(--surface-secondary)] text-[var(--accent)] font-medium text-xs border border-[var(--border)] hover:border-[var(--accent)] transition-all"
             >
-              <span>View Honey Passport</span>
+              <span>{t.overview.viewPassport}</span>
               <ArrowRight size={13} className="shrink-0" />
             </Link>
             <Link
               to={`/verify/${activeBatch.id}`}
               className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-[var(--accent)] text-white font-medium text-xs hover:opacity-90 transition-opacity"
             >
-              <span>Consumer QR Story</span>
+              <span>{t.overview.qrStory}</span>
               <ArrowRight size={13} className="shrink-0" />
             </Link>
           </div>

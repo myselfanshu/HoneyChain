@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Thermometer, Droplets, Weight, ArrowRight } from 'lucide-react';
 import { Hive } from '@/data/types';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 interface HiveCardProps {
   hive: Hive | {
@@ -18,6 +19,7 @@ interface HiveCardProps {
 }
 
 export const HiveCard: React.FC<HiveCardProps> = ({ hive }) => {
+  const { t } = useTranslation();
   const latestSensor = 'sensors' in hive && hive.sensors && hive.sensors.length > 0 
     ? hive.sensors[hive.sensors.length - 1] 
     : undefined;
@@ -50,7 +52,7 @@ export const HiveCard: React.FC<HiveCardProps> = ({ hive }) => {
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center text-[var(--text-secondary)] mb-1 gap-1">
                 <Thermometer size={13} className="text-[var(--accent)]" />
-                <span className="text-[11px]">Temp</span>
+                <span className="text-[11px]">{t.smartHives.temp}</span>
               </div>
               <span className="text-[var(--text-primary)] font-semibold text-sm">{temp}°C</span>
             </div>
@@ -58,7 +60,7 @@ export const HiveCard: React.FC<HiveCardProps> = ({ hive }) => {
             <div className="flex flex-col items-center text-center border-x border-[var(--border)]">
               <div className="flex items-center text-[var(--text-secondary)] mb-1 gap-1">
                 <Droplets size={13} className="text-blue-500" />
-                <span className="text-[11px]">Humidity</span>
+                <span className="text-[11px]">{t.smartHives.humidity}</span>
               </div>
               <span className="text-[var(--text-primary)] font-semibold text-sm">{humidity}%</span>
             </div>
@@ -66,7 +68,7 @@ export const HiveCard: React.FC<HiveCardProps> = ({ hive }) => {
             <div className="flex flex-col items-center text-center">
               <div className="flex items-center text-[var(--text-secondary)] mb-1 gap-1">
                 <Weight size={13} className="text-[var(--accent)]" />
-                <span className="text-[11px]">Weight</span>
+                <span className="text-[11px]">{t.smartHives.weight}</span>
               </div>
               <span className="text-[var(--text-primary)] font-semibold text-sm">{weight} kg</span>
             </div>
@@ -74,9 +76,9 @@ export const HiveCard: React.FC<HiveCardProps> = ({ hive }) => {
         </div>
 
         <div className="flex items-center justify-between pt-3 border-t border-[var(--border)] text-xs text-[var(--text-secondary)]">
-          <span>Telemetry Active</span>
+          <span>{t.smartHives.telemetryActive}</span>
           <span className="flex items-center gap-1 font-medium text-[var(--accent)] group-hover:translate-x-1 transition-transform">
-            Telemetry & Events <ArrowRight size={12} />
+            {t.smartHives.telemetryEvents} <ArrowRight size={12} />
           </span>
         </div>
       </div>

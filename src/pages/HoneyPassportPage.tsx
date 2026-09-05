@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { HoneyPassportCard } from '@/components/passport/HoneyPassport';
 import { JourneySnapshot } from '@/components/passport/JourneySnapshot';
 import { TrustScore } from '@/components/ui/TrustScore';
 import { batches } from '@/data/batches';
 import { Modal } from '@/components/ui/Modal';
-import { Award, ArrowRight, ShieldCheck, CheckCircle2, ChevronDown } from 'lucide-react';
+import { Award, ArrowRight } from 'lucide-react';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export const HoneyPassportPage: React.FC = () => {
+  const { t } = useTranslation();
   const { batchId } = useParams<{ batchId?: string }>();
   const [selectedBatchId, setSelectedBatchId] = useState(batchId || 'HC-2026-0142');
   const [isScoreModalOpen, setIsScoreModalOpen] = useState(false);
@@ -26,9 +28,9 @@ export const HoneyPassportPage: React.FC = () => {
               <Award size={22} />
             </div>
             <div>
-              <h1 className="text-3xl sm:text-4xl font-serif text-[var(--text-primary)] font-bold">Honey Passport</h1>
+              <h1 className="text-3xl sm:text-4xl font-serif text-[var(--text-primary)] font-bold">{t.passport.title}</h1>
               <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-0.5">
-                Cryptographic provenance, lab testing purity, and harvest certificate.
+                {t.passport.subtitle}
               </p>
             </div>
           </div>
@@ -36,7 +38,7 @@ export const HoneyPassportPage: React.FC = () => {
 
         {/* Batch Selector Dropdown */}
         <div className="flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] px-3.5 py-2 rounded-xl text-sm self-start sm:self-auto">
-          <span className="text-[var(--text-secondary)] font-medium">Batch:</span>
+          <span className="text-[var(--text-secondary)] font-medium">{t.passport.batch}:</span>
           <select 
             value={currentBatch.id}
             onChange={(e) => setSelectedBatchId(e.target.value)}
@@ -61,8 +63,8 @@ export const HoneyPassportPage: React.FC = () => {
         <div className="lg:col-span-1">
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 flex flex-col items-center justify-between h-full text-center shadow-sm">
             <div className="w-full text-center pb-2 border-b border-[var(--border)]">
-              <h3 className="text-xl font-serif font-bold text-[var(--text-primary)]">Trust Score</h3>
-              <p className="text-xs text-[var(--text-secondary)] mt-1">Multi-factor cryptographic consensus</p>
+              <h3 className="text-xl font-serif font-bold text-[var(--text-primary)]">{t.overview.trustScore}</h3>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">{t.overview.consensusVerified}</p>
             </div>
             
             <div className="my-6">
@@ -71,14 +73,14 @@ export const HoneyPassportPage: React.FC = () => {
             
             <div className="space-y-4 w-full">
               <p className="text-[var(--text-secondary)] text-xs leading-relaxed max-w-xs mx-auto">
-                This score is based on the complete journey, sensor stability, moisture index, and blockchain verification of this honey batch.
+                {t.passport.scoreDesc}
               </p>
               
               <button 
                 onClick={() => setIsScoreModalOpen(true)}
                 className="w-full py-3 px-4 rounded-xl border border-[var(--border)] text-[var(--text-primary)] font-medium text-sm hover:bg-[var(--surface-secondary)] hover:border-[var(--accent)] transition-all flex items-center justify-center gap-1.5 shadow-sm"
               >
-                <span>View Full Score Breakdown</span>
+                <span>{t.passport.viewScoreBreakdown}</span>
                 <ArrowRight size={14} className="text-[var(--accent)]" />
               </button>
             </div>
@@ -95,42 +97,42 @@ export const HoneyPassportPage: React.FC = () => {
       <Modal
         isOpen={isScoreModalOpen}
         onClose={() => setIsScoreModalOpen(false)}
-        title="Trust Score Methodology (96/100)"
+        title={`${t.passport.trustMethodology} (96/100)`}
       >
         <div className="space-y-4 text-sm text-[var(--text-secondary)]">
           <p>
-            The Honey Chain Trust Score aggregates 4 primary telemetry dimensions into a weighted index:
+            {t.passport.modalIntro}
           </p>
 
           <div className="space-y-3 pt-2">
             <div className="p-3 rounded-xl bg-[var(--surface-secondary)] border border-[var(--border)] flex justify-between items-center">
               <div>
-                <p className="font-semibold text-[var(--text-primary)]">Hive Environmental Health (30%)</p>
-                <p className="text-xs">Temperature and humidity within optimal range for &gt; 95% of cycle.</p>
+                <p className="font-semibold text-[var(--text-primary)]">{t.passport.dim1Title}</p>
+                <p className="text-xs">{t.passport.dim1Desc}</p>
               </div>
               <span className="font-bold text-[var(--accent)] font-serif text-lg">29/30</span>
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-secondary)] border border-[var(--border)] flex justify-between items-center">
               <div>
-                <p className="font-semibold text-[var(--text-primary)]">Lab Certified Purity (30%)</p>
-                <p className="text-xs">Moisture {currentBatch.passport.moisture}%, zero antibiotic residues detected.</p>
+                <p className="font-semibold text-[var(--text-primary)]">{t.passport.dim2Title}</p>
+                <p className="text-xs">{t.passport.dim2Desc}</p>
               </div>
               <span className="font-bold text-[var(--accent)] font-serif text-lg">30/30</span>
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-secondary)] border border-[var(--border)] flex justify-between items-center">
               <div>
-                <p className="font-semibold text-[var(--text-primary)]">Chain of Custody Continuity (25%)</p>
-                <p className="text-xs">All 5 handoffs signed by authorized cryptographic keys.</p>
+                <p className="font-semibold text-[var(--text-primary)]">{t.passport.dim3Title}</p>
+                <p className="text-xs">{t.passport.dim3Desc}</p>
               </div>
               <span className="font-bold text-[var(--accent)] font-serif text-lg">24/25</span>
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface-secondary)] border border-[var(--border)] flex justify-between items-center">
               <div>
-                <p className="font-semibold text-[var(--text-primary)]">Storage & Transit Stability (15%)</p>
-                <p className="text-xs">Low HMF level confirms gentle handling without overheating.</p>
+                <p className="font-semibold text-[var(--text-primary)]">{t.passport.dim4Title}</p>
+                <p className="text-xs">{t.passport.dim4Desc}</p>
               </div>
               <span className="font-bold text-[var(--accent)] font-serif text-lg">13/15</span>
             </div>
@@ -141,7 +143,7 @@ export const HoneyPassportPage: React.FC = () => {
               onClick={() => setIsScoreModalOpen(false)}
               className="px-5 py-2 rounded-xl bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90"
             >
-              Close
+              {t.common.close}
             </button>
           </div>
         </div>

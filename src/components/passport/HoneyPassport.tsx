@@ -1,13 +1,16 @@
 import React from 'react';
-import { CheckCircle, Award, ShieldCheck, Sparkles, QrCode } from 'lucide-react';
+import { CheckCircle, Sparkles, QrCode } from 'lucide-react';
 import { Batch } from '@/data/types';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 interface HoneyPassportProps {
   batch: Batch;
 }
 
 export const HoneyPassportCard: React.FC<HoneyPassportProps> = ({ batch }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-10 shadow-lg transition-all duration-300">
       {/* Decorative Ornate Amber Corner Accents */}
@@ -96,7 +99,7 @@ export const HoneyPassportCard: React.FC<HoneyPassportProps> = ({ batch }) => {
             className="mt-4 flex items-center gap-1.5 text-xs text-[var(--accent)] hover:underline font-medium"
           >
             <QrCode size={13} />
-            <span>Consumer QR Link</span>
+            <span>{t.overview.qrStory}</span>
           </Link>
         </div>
 
@@ -106,26 +109,26 @@ export const HoneyPassportCard: React.FC<HoneyPassportProps> = ({ batch }) => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-serif tracking-[0.2em] uppercase text-[var(--accent)] font-semibold">
-                  Official Digital Provenance
+                  {t.passport.officialProvenance}
                 </span>
                 <Sparkles size={13} className="text-[var(--accent)]" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[var(--text-primary)] mt-0.5 tracking-tight">
-                HONEY PASSPORT
+                {t.passport.title.toUpperCase()}
               </h2>
             </div>
             
             <div className="flex items-center gap-1.5 bg-green-500/10 text-green-700 dark:text-green-400 px-3.5 py-1.5 rounded-full border border-green-500/20 text-xs font-bold tracking-wider self-start sm:self-auto">
               <CheckCircle size={15} />
-              <span>VERIFIED ✓</span>
+              <span>{t.common.verified.toUpperCase()} ✓</span>
             </div>
           </div>
 
-          {/* 6 Grid Fields matching Reference Exactly */}
+          {/* 6 Grid Fields */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-6 gap-x-6">
             <div>
               <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">
-                Origin
+                {t.passport.origin}
               </span>
               <span className="font-serif font-bold text-base sm:text-lg text-[var(--text-primary)] block">
                 {batch.location}, India
@@ -134,7 +137,7 @@ export const HoneyPassportCard: React.FC<HoneyPassportProps> = ({ batch }) => {
 
             <div>
               <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">
-                Harvest Hive
+                {t.passport.harvestHive}
               </span>
               <Link 
                 to={`/smart-hives/${batch.hiveId}`}
@@ -146,7 +149,7 @@ export const HoneyPassportCard: React.FC<HoneyPassportProps> = ({ batch }) => {
 
             <div>
               <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">
-                Harvest Date
+                {t.passport.harvestDate}
               </span>
               <span className="font-serif font-bold text-base sm:text-lg text-[var(--text-primary)] block">
                 28 Aug 2026
@@ -155,7 +158,7 @@ export const HoneyPassportCard: React.FC<HoneyPassportProps> = ({ batch }) => {
 
             <div>
               <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">
-                Floral Source
+                {t.passport.floralSource}
               </span>
               <span className="font-serif font-bold text-base sm:text-lg text-[var(--text-primary)] block">
                 {batch.passport.floralSource}
@@ -164,7 +167,7 @@ export const HoneyPassportCard: React.FC<HoneyPassportProps> = ({ batch }) => {
 
             <div>
               <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">
-                Quantity
+                {t.passport.quantity}
               </span>
               <span className="font-serif font-bold text-base sm:text-lg text-[var(--text-primary)] block">
                 {batch.weightKg} kg
@@ -173,10 +176,10 @@ export const HoneyPassportCard: React.FC<HoneyPassportProps> = ({ batch }) => {
 
             <div>
               <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">
-                Quality
+                {t.passport.quality}
               </span>
               <span className="font-serif font-bold text-base sm:text-lg text-green-600 dark:text-green-400 block">
-                Verified (Grade A)
+                Verified ({t.passport.gradeA})
               </span>
             </div>
           </div>
@@ -184,19 +187,19 @@ export const HoneyPassportCard: React.FC<HoneyPassportProps> = ({ batch }) => {
           {/* Lab Telemetry Specs */}
           <div className="p-4 rounded-xl bg-[var(--surface-secondary)] border border-[var(--border)] grid grid-cols-3 gap-2 text-center text-xs">
             <div>
-              <span className="text-[var(--text-secondary)] block">Moisture</span>
+              <span className="text-[var(--text-secondary)] block">{t.passport.moisture}</span>
               <span className="font-bold text-[var(--text-primary)] text-sm">{batch.passport.moisture}%</span>
-              <span className="text-[10px] text-green-600 font-medium">Safe (&lt; 18%)</span>
+              <span className="text-[10px] text-green-600 font-medium">{t.passport.safeMoisture}</span>
             </div>
             <div className="border-x border-[var(--border)]">
-              <span className="text-[var(--text-secondary)] block">Purity</span>
+              <span className="text-[var(--text-secondary)] block">{t.passport.purity}</span>
               <span className="font-bold text-[var(--text-primary)] text-sm">{batch.passport.purity}%</span>
-              <span className="text-[10px] text-green-600 font-medium">Unadulterated</span>
+              <span className="text-[10px] text-green-600 font-medium">{t.passport.unadulterated}</span>
             </div>
             <div>
-              <span className="text-[var(--text-secondary)] block">HMF Level</span>
+              <span className="text-[var(--text-secondary)] block">{t.passport.hmfLevel}</span>
               <span className="font-bold text-[var(--text-primary)] text-sm">{batch.passport.hmfLevel} mg/kg</span>
-              <span className="text-[10px] text-green-600 font-medium">Raw & Active</span>
+              <span className="text-[10px] text-green-600 font-medium">{t.passport.rawActive}</span>
             </div>
           </div>
         </div>
