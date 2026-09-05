@@ -1,101 +1,100 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowDown } from 'lucide-react';
-
-const Hexagon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 100 115" className={className} xmlns="http://www.w3.org/2000/svg">
-    <polygon points="50 0 100 28.86 100 86.6 50 115.47 0 86.6 0 28.86" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-  </svg>
-);
-
-const Bee = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" className={className} xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-    <path d="M12 2C9 2 7 4 7 7C7 8 8 9 9 9C10 9 11 8 12 8C13 8 14 9 15 9C16 9 17 8 17 7C17 4 15 2 12 2ZM8 10C6 10 4 12 4 14C4 16 6 18 8 18L10 16L8 14L10 12L8 10ZM16 10L14 12L16 14L14 16L16 18C18 18 20 16 20 14C20 12 18 10 16 10ZM12 11C11.5 11 11 11.5 11 12L11 16C11 16.5 11.5 17 12 17C12.5 17 13 16.5 13 16L13 12C13 11.5 12.5 11 12 11Z" />
-  </svg>
-);
-
-const HoneycombArt = () => {
-  return (
-    <div className="relative w-full h-[400px] lg:h-[600px] flex items-center justify-center overflow-visible">
-      {/* Central big hex */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 text-[var(--accent)] opacity-80 dark:opacity-20 animate-[pulse_4s_ease-in-out_infinite]">
-        <Hexagon />
-      </div>
-      
-      {/* Cluster 1 */}
-      <div className="absolute top-1/4 left-1/3 w-32 text-amber-500 opacity-60 dark:opacity-30 dark:stroke-[var(--accent)] dark:fill-transparent animate-[bounce_6s_infinite]">
-        <Hexagon />
-      </div>
-      <div className="absolute top-1/3 left-1/4 w-24 text-yellow-500 opacity-70 dark:opacity-40 animate-[bounce_5s_infinite_0.5s]">
-        <Hexagon />
-      </div>
-
-      {/* Cluster 2 */}
-      <div className="absolute bottom-1/4 right-1/4 w-40 text-amber-600 opacity-50 dark:opacity-20 dark:stroke-[var(--accent)] dark:fill-transparent animate-[pulse_5s_infinite_1s]">
-        <Hexagon />
-      </div>
-      <div className="absolute bottom-1/3 right-1/3 w-28 text-yellow-600 opacity-60 dark:opacity-30 animate-[bounce_7s_infinite_1s]">
-        <Hexagon />
-      </div>
-
-      {/* Bees */}
-      <div className="absolute top-1/3 right-1/4 w-8 text-[var(--text-primary)] animate-[bounce_3s_infinite]">
-        <Bee />
-      </div>
-      <div className="absolute bottom-1/3 left-1/3 w-6 text-[var(--text-primary)] animate-[bounce_4s_infinite_0.5s]">
-        <Bee />
-      </div>
-
-      {/* Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[var(--accent)] blur-[100px] opacity-20 rounded-full pointer-events-none"></div>
-    </div>
-  );
-};
+import { ArrowRight, ArrowDown, Play, Route, ShieldCheck, Sparkles, HeartHandshake } from 'lucide-react';
+import HeroVisual3D from './HeroVisual3D';
 
 const HeroSection: React.FC = () => {
   return (
-    <div className="relative w-full min-h-[90vh] flex flex-col justify-center px-6 pt-20 lg:pt-0 overflow-hidden">
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center flex-grow">
-        
-        {/* Left: Text Content */}
-        <div className="flex flex-col items-start z-10 space-y-8">
-          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl leading-tight text-[var(--text-primary)] font-bold tracking-tight">
-            EVERY DROP <br />
-            <span className="italic font-light text-[var(--text-secondary)]">HAS A</span> STORY.
+    <section className="relative w-full min-h-[88vh] flex flex-col justify-between px-4 sm:px-6 lg:px-8 pt-8 pb-12 overflow-hidden max-w-7xl mx-auto">
+      {/* Top Bar / Intro Trigger */}
+      <div className="flex justify-end mb-6">
+        <Link
+          to="/honey-passport/HC-2026-0142"
+          className="flex items-center gap-2 text-xs font-mono text-[var(--text-secondary)] bg-[var(--surface)] hover:bg-[var(--surface-secondary)] px-4 py-2 rounded-full border border-[var(--border)] transition-all shadow-xs hover:border-[var(--accent)]"
+        >
+          <Play size={11} className="text-[var(--accent)] fill-[var(--accent)]" />
+          <span>Watch Provenance Journey</span>
+          <span className="text-[var(--accent)] font-bold">›</span>
+        </Link>
+      </div>
+
+      {/* Main 2-Column Hero Grid matching Reference */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center flex-1 my-auto">
+        {/* Left Column: Editorial Headline & Actions */}
+        <div className="lg:col-span-6 flex flex-col items-start z-10 space-y-6">
+          <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl leading-[1.05] text-[var(--text-primary)] font-bold tracking-tight">
+            EVERY DROP<br />
+            <span className="text-[var(--accent)] font-serif">HAS A STORY.</span>
           </h1>
-          <p className="font-sans text-lg md:text-xl text-[var(--text-secondary)] max-w-lg leading-relaxed">
+
+          <p className="font-sans text-base sm:text-lg text-[var(--text-secondary)] max-w-lg leading-relaxed">
             Honey Chain connects beekeepers, hives and consumers through transparency, intelligence and trust.
           </p>
-          
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
-            <Link 
-              to="/overview" 
-              className="w-full sm:w-auto px-8 py-4 bg-[var(--accent)] text-[var(--background)] font-sans font-bold tracking-widest text-sm rounded-full flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-sm"
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-3 w-full sm:w-auto">
+            <Link
+              to="/overview"
+              className="px-8 py-3.5 bg-[var(--accent)] text-white font-sans font-bold tracking-widest text-xs uppercase rounded-full flex items-center justify-center gap-2 hover:opacity-95 shadow-md shadow-amber-500/20 hover:shadow-lg transition-all"
             >
-              EXPLORE PLATFORM
-              <ArrowRight size={18} />
+              <span>EXPLORE PLATFORM</span>
+              <ArrowRight size={15} />
             </Link>
-            <Link 
-              to="/verify/HC-2026-0142" 
-              className="w-full sm:w-auto px-8 py-4 border border-[var(--text-primary)] text-[var(--text-primary)] font-sans font-bold tracking-widest text-sm rounded-full flex items-center justify-center hover:bg-[var(--text-primary)] hover:text-[var(--background)] transition-colors"
+            <Link
+              to="/verify/HC-2026-0142"
+              className="px-8 py-3.5 border border-[var(--border)] text-[var(--text-primary)] bg-[var(--surface)] font-sans font-bold tracking-widest text-xs uppercase rounded-full flex items-center justify-center hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all shadow-xs"
             >
-              VERIFY A BATCH
+              <span>VERIFY A BATCH</span>
             </Link>
+          </div>
+
+          <div className="pt-2 text-[var(--text-secondary)] hidden sm:block">
+            <div className="w-8 h-8 rounded-full border border-[var(--border)] flex items-center justify-center">
+              <ArrowDown size={14} className="text-[var(--accent)] animate-bounce" />
+            </div>
           </div>
         </div>
 
-        {/* Right: Honeycomb Art */}
-        <div className="w-full z-0 h-full flex items-center justify-center mt-12 lg:mt-0">
-          <HoneycombArt />
+        {/* Right Column: 3D Artwork Composition */}
+        <div className="lg:col-span-6 w-full flex items-center justify-center">
+          <HeroVisual3D />
         </div>
       </div>
 
-      {/* Bottom Scroll Indicator */}
-      <div className="relative lg:absolute lg:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce z-10 text-[var(--text-secondary)] mt-12 lg:mt-0 pb-8 lg:pb-0">
-        <span className="font-sans text-xs tracking-widest uppercase font-bold">Scroll to explore</span>
-        <ArrowDown size={16} />
+      {/* Bottom 4 Brand Value Pillars — Matching Reference Hero */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pt-12 border-t border-[var(--border)] mt-12">
+        <div className="p-4 rounded-2xl bg-[var(--surface)]/50 border border-[var(--border)] flex flex-col gap-1.5 hover:border-[var(--accent)]/50 transition-colors">
+          <div className="flex items-center gap-2 text-[var(--accent)]">
+            <Route size={16} />
+            <span className="font-mono text-xs uppercase font-bold tracking-wider">TRACE</span>
+          </div>
+          <p className="text-xs text-[var(--text-secondary)]">Every action is immutably recorded.</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-[var(--surface)]/50 border border-[var(--border)] flex flex-col gap-1.5 hover:border-[var(--accent)]/50 transition-colors">
+          <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+            <ShieldCheck size={16} />
+            <span className="font-mono text-xs uppercase font-bold tracking-wider">VERIFY</span>
+          </div>
+          <p className="text-xs text-[var(--text-secondary)]">Every batch is lab & consensus verified.</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-[var(--surface)]/50 border border-[var(--border)] flex flex-col gap-1.5 hover:border-[var(--accent)]/50 transition-colors">
+          <div className="flex items-center gap-2 text-[var(--accent)]">
+            <Sparkles size={16} />
+            <span className="font-mono text-xs uppercase font-bold tracking-wider">PREDICT</span>
+          </div>
+          <p className="text-xs text-[var(--text-secondary)]">Acoustic insights for healthier hives.</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-[var(--surface)]/50 border border-[var(--border)] flex flex-col gap-1.5 hover:border-[var(--accent)]/50 transition-colors">
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+            <HeartHandshake size={16} />
+            <span className="font-mono text-xs uppercase font-bold tracking-wider">CONNECT</span>
+          </div>
+          <p className="text-xs text-[var(--text-secondary)]">From pristine apiaries to table.</p>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

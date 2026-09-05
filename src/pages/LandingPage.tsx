@@ -1,17 +1,13 @@
 import React from 'react';
 import HeroSection from '@/components/hero/HeroSection';
-import ValuePillars from '@/components/hero/ValuePillars';
 import { Link } from 'react-router-dom';
 import { Box, Award, GitBranch, ShoppingBag, QrCode, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="w-full min-h-screen bg-[var(--background)] text-[var(--text-primary)] space-y-12 pb-16 animate-fade-in">
-      {/* Editorial Hero */}
+    <div className="w-full min-h-screen bg-[var(--background)] text-[var(--text-primary)] space-y-16 pb-20 animate-fade-in">
+      {/* Editorial Hero with Integrated 3D Visual & Core Pillars */}
       <HeroSection />
-
-      {/* Core Brand Pillars: TRACE, VERIFY, PREDICT, CONNECT */}
-      <ValuePillars />
 
       {/* Interactive Platform Tour / Feature Showcase */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,7 +19,7 @@ const LandingPage: React.FC = () => {
             How Every Drop Tells Its Story
           </h2>
           <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-3 leading-relaxed">
-            From IoT acoustic hive telemetry in Uttar Pradesh to consumer smartphone verification at the dinner table.
+            From intelligent hive monitoring across India to trusted honey verification at the dinner table.
           </p>
         </div>
 

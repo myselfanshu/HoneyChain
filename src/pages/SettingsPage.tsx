@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Bell, Shield, Globe, Save, Edit2, CheckCircle2 } from 'lucide-react';
+import { User, Bell, Shield, Globe, Save, Edit2, CheckCircle2, Eye, EyeOff, Lock, X } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { currentUser as defaultUser } from '@/data/users';
 
@@ -27,6 +27,44 @@ const SettingsPage = () => {
     setIsEditing(false);
     setSavedMessage(true);
     setTimeout(() => setSavedMessage(false), 3000);
+  };
+
+  // ── Password change state ────────────────────────────────────────────────
+  // SECURITY NOTE: This is a prototype UI only. No password is stored,
+  // transmitted, or persisted anywhere — not in localStorage, sessionStorage,
+  // source code, or any client-accessible variable. In a real deployment this
+  // form would POST to a secure authenticated API endpoint over HTTPS.
+  const [showPwForm, setShowPwForm] = useState(false);
+  const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
+  const [showPw, setShowPw] = useState({ current: false, next: false, confirm: false });
+  const [pwError, setPwError] = useState('');
+  const [pwSuccess, setPwSuccess] = useState(false);
+
+  const validatePassword = (pw: string): string | null => {
+    if (pw.length < 8) return 'Password must be at least 8 characters.';
+    if (!/[A-Z]/.test(pw)) return 'Must include at least one uppercase letter.';
+    if (!/[0-9]/.test(pw)) return 'Must include at least one number.';
+    return null;
+  };
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwError('');
+    if (!pwForm.current) { setPwError('Please enter your current password.'); return; }
+    const validationError = validatePassword(pwForm.next);
+    if (validationError) { setPwError(validationError); return; }
+    if (pwForm.next !== pwForm.confirm) { setPwError('Passwords do not match.'); return; }
+    // Prototype: no real auth call — just show success feedback
+    setPwSuccess(true);
+    setPwForm({ current: '', next: '', confirm: '' });
+    setTimeout(() => { setPwSuccess(false); setShowPwForm(false); }, 3000);
+  };
+
+  const closePwForm = () => {
+    setShowPwForm(false);
+    setPwForm({ current: '', next: '', confirm: '' });
+    setPwError('');
+    setPwSuccess(false);
   };
 
   return (
@@ -72,7 +110,8 @@ const SettingsPage = () => {
         <div className="md:col-span-3 space-y-8">
           {/* Profile Section */}
           {activeTab === 'profile' && (
-            <section className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-6">
+            <>
+              <section className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-6">
               <div className="flex justify-between items-center pb-4 border-b border-[var(--border)]">
                 <div>
                   <h2 className="text-xl font-serif font-bold text-[var(--text-primary)]">Beekeeper Profile</h2>
@@ -155,13 +194,135 @@ const SettingsPage = () => {
               </div>
 
               <div className="pt-2 border-t border-[var(--border)]">
-                <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--text-secondary)]">
                   <span>Network Trust Rating: <strong className="text-[var(--accent)]">96/100 (Certified)</strong></span>
                   <span>Registered: March 2024</span>
                 </div>
               </div>
             </section>
-          )}
+
+            {/* Security section — shown alongside profile tab */}
+            <section className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-5">
+              <div className="pb-4 border-b border-[var(--border)]">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <Lock size={16} className="text-[var(--accent)] shrink-0" />
+                  <h2 className="text-xl font-serif font-bold text-[var(--text-primary)]">Security</h2>
+                </div>
+                <p className="text-xs text-[var(--text-secondary)]">Manage your account password.</p>
+              </div>
+
+              {/* Password row */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">Password</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5 font-mono tracking-widest">••••••••••••</p>
+                </div>
+                {!showPwForm && (
+                  <button
+                    onClick={() => setShowPwForm(true)}
+                    className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg bg-[var(--surface-secondary)] text-[var(--accent)] border border-[var(--border)] hover:bg-[var(--accent)] hover:text-white transition-all shrink-0"
+                  >
+                    <Edit2 size={14} />
+                    Change Password
+                  </button>
+                )}
+              </div>
+
+              {/* Change password form */}
+              {showPwForm && (
+                <form
+                  onSubmit={handlePasswordSubmit}
+                  className="space-y-4 pt-4 border-t border-[var(--border)]"
+                  autoComplete="off"
+                >
+                  {/* Prototype notice */}
+                  <div className="p-3 rounded-xl bg-amber-500/8 border border-amber-500/20 text-xs flex items-start gap-2">
+                    <Shield size={13} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <p className="text-[var(--text-secondary)]">
+                      <span className="font-semibold text-amber-700 dark:text-amber-400">Prototype UI — </span>
+                      No password is stored or transmitted. In a live deployment this would call a secure
+                      authenticated API endpoint.
+                    </p>
+                  </div>
+
+                  {/* Current password */}
+                  {[
+                    { key: 'current' as const, label: 'Current Password', auto: 'current-password' },
+                    { key: 'next' as const,    label: 'New Password',     auto: 'new-password' },
+                    { key: 'confirm' as const,  label: 'Confirm New Password', auto: 'new-password' },
+                  ].map(({ key, label, auto }) => (
+                    <div key={key}>
+                      <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5">
+                        {label}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPw[key] ? 'text' : 'password'}
+                          value={pwForm[key]}
+                          autoComplete={auto}
+                          onChange={(e) => setPwForm({ ...pwForm, [key]: e.target.value })}
+                          className="w-full text-sm text-[var(--text-primary)] px-3.5 py-2.5 pr-10 bg-[var(--background)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                          placeholder={key === 'current' ? 'Enter current password' : key === 'next' ? 'Min 8 chars, 1 uppercase, 1 number' : 'Re-enter new password'}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPw({ ...showPw, [key]: !showPw[key] })}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                          aria-label={showPw[key] ? 'Hide password' : 'Show password'}
+                        >
+                          {showPw[key] ? <EyeOff size={15} /> : <Eye size={15} />}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Validation requirements hint */}
+                  <div className="text-[11px] text-[var(--text-secondary)] space-y-0.5">
+                    <p>New password requirements:</p>
+                    <ul className="list-disc list-inside pl-1 space-y-0.5">
+                      <li className={pwForm.next.length >= 8 ? 'text-green-600 dark:text-green-400' : ''}>At least 8 characters</li>
+                      <li className={/[A-Z]/.test(pwForm.next) ? 'text-green-600 dark:text-green-400' : ''}>At least one uppercase letter</li>
+                      <li className={/[0-9]/.test(pwForm.next) ? 'text-green-600 dark:text-green-400' : ''}>At least one number</li>
+                    </ul>
+                  </div>
+
+                  {/* Error message */}
+                  {pwError && (
+                    <div className="flex items-center gap-2 text-xs text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">
+                      <X size={13} className="shrink-0" />
+                      {pwError}
+                    </div>
+                  )}
+
+                  {/* Success message */}
+                  {pwSuccess && (
+                    <div className="flex items-center gap-2 text-xs text-green-700 dark:text-green-400 bg-green-500/10 border border-green-500/20 px-3 py-2 rounded-lg">
+                      <CheckCircle2 size={13} className="shrink-0" />
+                      Password updated successfully. (Demo — no real change was made.)
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={closePwForm}
+                      className="px-4 py-2.5 rounded-xl border border-[var(--border)] text-[var(--text-secondary)] text-sm hover:text-[var(--text-primary)] transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 rounded-xl bg-[var(--accent)] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+                    >
+                      Update Password
+                    </button>
+                  </div>
+                </form>
+              )}
+            </section>
+          </>
+        )}
 
           {/* Preferences Section */}
           {activeTab === 'preferences' && (

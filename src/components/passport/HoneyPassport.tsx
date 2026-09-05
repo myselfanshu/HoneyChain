@@ -9,12 +9,12 @@ interface HoneyPassportProps {
 
 export const HoneyPassportCard: React.FC<HoneyPassportProps> = ({ batch }) => {
   return (
-    <div className="relative overflow-hidden rounded-3xl border-2 border-[var(--accent)]/60 bg-[var(--surface)] p-6 sm:p-10 shadow-xl transition-all duration-300">
-      {/* Decorative Ornate Corners */}
-      <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-[var(--accent)] pointer-events-none rounded-tl-sm" />
-      <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-[var(--accent)] pointer-events-none rounded-tr-sm" />
-      <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-[var(--accent)] pointer-events-none rounded-bl-sm" />
-      <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-[var(--accent)] pointer-events-none rounded-br-sm" />
+    <div className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-10 shadow-lg transition-all duration-300">
+      {/* Decorative Ornate Amber Corner Accents */}
+      <div className="absolute top-2.5 left-2.5 w-5 h-5 border-t-2 border-l-2 border-[var(--accent)]/70 pointer-events-none rounded-tl-sm" />
+      <div className="absolute top-2.5 right-2.5 w-5 h-5 border-t-2 border-r-2 border-[var(--accent)]/70 pointer-events-none rounded-tr-sm" />
+      <div className="absolute bottom-2.5 left-2.5 w-5 h-5 border-b-2 border-l-2 border-[var(--accent)]/70 pointer-events-none rounded-bl-sm" />
+      <div className="absolute bottom-2.5 right-2.5 w-5 h-5 border-b-2 border-r-2 border-[var(--accent)]/70 pointer-events-none rounded-br-sm" />
 
       {/* Background Subtle Watermark Stamp */}
       <div className="absolute -right-12 -bottom-12 w-64 h-64 opacity-5 dark:opacity-10 pointer-events-none rotate-12 select-none">

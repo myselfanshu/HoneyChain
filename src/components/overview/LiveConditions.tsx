@@ -70,10 +70,10 @@ const LiveConditions: React.FC = () => {
   const visibleConditions = expanded ? conditions : conditions.slice(0, 3);
 
   return (
-    <div className="bg-[var(--surface)] p-6 rounded-xl border border-[var(--border)] h-full flex flex-col">
-      <h3 className="text-xl font-serif text-[var(--text-primary)] mb-5">Live Conditions <span className="text-sm font-sans font-normal text-[var(--text-secondary)]">(Avg)</span></h3>
+    <div className="bg-[var(--surface)] p-5 sm:p-6 rounded-xl border border-[var(--border)]">
+      <h3 className="text-base font-serif font-bold text-[var(--text-primary)] mb-4">Live Conditions <span className="text-sm font-sans font-normal text-[var(--text-secondary)]">(Avg)</span></h3>
 
-      <div className="space-y-0 flex-1">
+      <div className="space-y-0">
         {visibleConditions.map((cond, idx) => {
           const Icon = cond.icon;
           const isLast = idx === visibleConditions.length - 1;

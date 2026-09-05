@@ -5,6 +5,8 @@ import {
   ShoppingBag, Bell, BarChart3, Settings, X, ArrowRight
 } from 'lucide-react';
 
+import HoneycombLogo from '@/components/ui/HoneycombLogo';
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -27,18 +29,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     <div className="flex flex-col h-full bg-[var(--sidebar-bg)] border-r border-[var(--border)] transition-colors duration-300">
       {/* Header / Logo */}
       <div className="flex items-center justify-between p-6">
-        <Link to="/" className="flex items-center gap-3 group">
-          {/* Honeycomb Logo SVG */}
-          <div className="text-[var(--accent)] group-hover:scale-105 transition-transform">
-            <svg width="28" height="32" viewBox="0 0 28 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14 0L27.8564 8V24L14 32L0.143594 24V8L14 0Z" opacity="0.2"/>
-              <path d="M14 3.2L24.8 9.6V22.4L14 28.8L3.2 22.4V9.6L14 3.2ZM14 0L0 8.33333V23.6667L14 32L28 23.6667V8.33333L14 0Z"/>
-              <path d="M14 11L19.5 14V20L14 23L8.5 20V14L14 11Z"/>
-            </svg>
-          </div>
+        <Link to="/" className="flex items-center gap-3.5 group">
+          <HoneycombLogo size={32} />
           <div className="flex flex-col">
-            <span className="font-serif font-bold text-lg leading-none tracking-wide text-[var(--sidebar-text)]">HONEY</span>
-            <span className="font-sans text-[0.65rem] font-semibold tracking-[0.2em] text-[var(--sidebar-text)] opacity-70 mt-1">CHAIN</span>
+            <span className="font-serif font-bold text-lg leading-none tracking-wide text-[var(--sidebar-text)]">
+              HONEY
+            </span>
+            <span className="font-sans text-[0.62rem] font-bold tracking-[0.25em] text-[var(--accent)] mt-1">
+              CHAIN
+            </span>
           </div>
         </Link>
         <button 
