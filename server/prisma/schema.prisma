@@ -1,0 +1,198 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MARKET_HEAD
+  BEEKEEPER
+  PROCESSOR
+  PACKER
+  DISTRIBUTOR
+  RETAILER
+  AUDITOR
+}
+enum DataStatus {
+  VERIFIED
+  OBSERVED
+  DEMO
+}
+enum HiveStatus {
+  HEALTHY
+  WATCH
+  INSPECT
+}
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+enum TraceabilityStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+enum VerificationMethod {
+  RECORDED
+  THIRD_PARTY_CERTIFICATE
+  BLOCKCHAIN_CONFIRMED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(BEEKEEPER)
+  location     String?
+  createdAt    DateTime @default(now())
+  hives        Hive[]
+  alerts       Alert[]       @relation("AlertRecipient")
+  reports      FieldReport[]
+}
+
+model Apiary {
+  id        String   @id @default(cuid())
+  name      String
+  location  String
+  latitude  Decimal? @db.Decimal(9, 6)
+  longitude Decimal? @db.Decimal(9, 6)
+  hives     Hive[]
+  createdAt DateTime @default(now())
+}
+
+model Hive {
+  id             String     @id
+  name           String
+  location       String
+  status         HiveStatus @default(HEALTHY)
+  queenAgeMonths Int?
+  lastInspection DateTime?
+  ownerId        String
+  owner          User       @relation(fields: [ownerId], references: [id])
+  apiaryId       String?
+  apiary         Apiary?    @relation(fields: [apiaryId], references: [id])
+  telemetry      TelemetryReading[]
+  batches        Batch[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model TelemetryReading {
+  id             String     @id @default(cuid())
+  hiveId         String
+  hive           Hive       @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  recordedAt     DateTime
+  temperatureC   Decimal?   @db.Decimal(5, 2)
+  humidityPct    Decimal?   @db.Decimal(5, 2)
+  weightKg       Decimal?   @db.Decimal(8, 2)
+  colonyActivity Decimal?   @db.Decimal(5, 2)
+  acousticLevel  Decimal?   @db.Decimal(8, 2)
+  source         String     // device ID or a documented manual source
+  dataStatus     DataStatus @default(OBSERVED)
+  @@index([hiveId, recordedAt])
+}
+
+model Batch {
+  id              String   @id
+  name            String
+  location        String
+  harvestDate     DateTime
+  hiveId          String?
+  hive            Hive?    @relation(fields: [hiveId], references: [id])
+  weightKg        Decimal  @db.Decimal(10, 2)
+  dataStatus      DataStatus @default(OBSERVED)
+  publicTokenHash String?  @unique
+  passport        Passport?
+  events          TraceabilityEvent[]
+  product         MarketProduct?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Passport {
+  id                  String   @id @default(cuid())
+  batchId             String   @unique
+  batch               Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  floralSource        String?
+  purityPct           Decimal? @db.Decimal(5, 2)
+  moisturePct         Decimal? @db.Decimal(5, 2)
+  hmfMgKg             Decimal? @db.Decimal(8, 2)
+  antibioticsDetected Boolean?
+  certificateUrl      String?
+  qualityStatus       DataStatus @default(OBSERVED)
+  issuedAt            DateTime @default(now())
+}
+
+model TraceabilityEvent {
+  id                  String             @id @default(cuid())
+  batchId             String
+  batch               Batch              @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  stage               String
+  description         String
+  occurredAt          DateTime
+  actorName           String
+  actorRole           Role
+  location            String
+  status              TraceabilityStatus @default(COMPLETED)
+  dataStatus          DataStatus         @default(OBSERVED)
+  verificationMethod  VerificationMethod @default(RECORDED)
+  externalProofRef    String?            // set only after genuine external verification
+  recordedAt          DateTime           @default(now())
+  @@index([batchId, occurredAt])
+}
+
+model MarketProduct {
+  id                String   @id @default(cuid())
+  batchId           String   @unique
+  batch             Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  pricePerKg        Decimal  @db.Decimal(10, 2)
+  availableWeightKg Decimal  @db.Decimal(10, 2)
+  currency          String   @default("INR")
+  sellerName        String
+  sellerRole        Role
+  active            Boolean  @default(true)
+  dataStatus        DataStatus @default(OBSERVED)
+}
+
+model Alert {
+  id          String        @id @default(cuid())
+  recipientId String
+  recipient   User          @relation("AlertRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  hiveId      String?
+  severity    AlertSeverity
+  title       String
+  message     String
+  readAt      DateTime?
+  source      String
+  dataStatus  DataStatus    @default(OBSERVED)
+  createdAt   DateTime      @default(now())
+}
+
+model UserSetting {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  language  String   @default("en")
+  theme     String   @default("system")
+  alertsOn  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model FieldReport {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hiveId      String?
+  title       String
+  period      String?
+  notes       String?
+  status      String   @default("Completed")
+  createdAt   DateTime @default(now())
+  @@index([userId, createdAt])
+}
+

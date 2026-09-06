@@ -1,186 +1,177 @@
-import React, { useState } from 'react';
-import { AlertTriangle, AlertCircle, Info, CheckCircle, Clock, Check, Filter } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { AlertTriangle, AlertCircle, Info, CheckCircle, RefreshCw } from 'lucide-react';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { alertsApi, Alert } from '@/api/alerts';
 
 type FilterType = 'All' | 'Critical' | 'Warnings' | 'Info';
 
-const AlertsPage = () => {
+export const AlertsPage = () => {
   const { t } = useTranslation();
+  const { token } = useAuth();
+
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>('All');
 
-  const alertsData = [
-    { 
-      id: '1', 
-      type: 'critical', 
-      title: t.alerts.alert1Title, 
-      description: t.alerts.alert1Desc, 
-      timestamp: t.alerts.time10m, 
-      related: `${t.nav.hives} H-103`, 
-      status: 'New' 
-    },
-    { 
-      id: '2', 
-      type: 'warning', 
-      title: t.alerts.alert2Title, 
-      description: t.alerts.alert2Desc, 
-      timestamp: t.alerts.time2h, 
-      related: `${t.nav.hives} H-104`, 
-      status: 'New' 
-    },
-    { 
-      id: '3', 
-      type: 'info', 
-      title: t.alerts.alert3Title, 
-      description: t.alerts.alert3Desc, 
-      timestamp: t.alerts.time5h, 
-      related: t.alerts.northApiary, 
-      status: 'New' 
-    },
-    { 
-      id: '4', 
-      type: 'warning', 
-      title: t.alerts.alert4Title, 
-      description: t.alerts.alert4Desc, 
-      timestamp: t.alerts.time1d, 
-      related: `${t.nav.hives} H-105`, 
-      status: 'Acknowledged' 
-    },
-    { 
-      id: '5', 
-      type: 'info', 
-      title: t.alerts.alert5Title, 
-      description: t.alerts.alert5Desc, 
-      timestamp: t.alerts.time2d, 
-      related: t.alerts.system, 
-      status: 'Resolved' 
-    },
-  ];
+  const fetchAlerts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await alertsApi.getAlerts(token);
+      setAlerts(data);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to load alerts.');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
-  const [alerts, setAlerts] = useState(alertsData);
+  useEffect(() => {
+    fetchAlerts();
+  }, [fetchAlerts]);
+
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      await alertsApi.markAsRead(id, token);
+      setAlerts(alerts.map((a) => (a.id === id ? { ...a, readAt: new Date().toISOString() } : a)));
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
 
   const getFilteredAlerts = () => {
     if (activeFilter === 'All') return alerts;
-    if (activeFilter === 'Critical') return alerts.filter(a => a.type === 'critical');
-    if (activeFilter === 'Warnings') return alerts.filter(a => a.type === 'warning');
-    if (activeFilter === 'Info') return alerts.filter(a => a.type === 'info');
+    if (activeFilter === 'Critical') return alerts.filter((a) => a.severity === 'CRITICAL');
+    if (activeFilter === 'Warnings') return alerts.filter((a) => a.severity === 'WARNING');
+    if (activeFilter === 'Info') return alerts.filter((a) => a.severity === 'INFO');
     return alerts;
   };
 
   const filteredAlerts = getFilteredAlerts();
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case 'critical': return <AlertTriangle className="w-6 h-6 text-red-500" />;
-      case 'warning': return <AlertCircle className="w-6 h-6 text-amber-500" />;
-      case 'info': return <Info className="w-6 h-6 text-blue-500" />;
-      default: return <AlertCircle className="w-6 h-6 text-[var(--text-secondary)]" />;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'New':
-        return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-[var(--accent)] text-white">{t.common.new}</span>;
-      case 'Acknowledged':
-        return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">{t.common.acknowledged}</span>;
-      case 'Resolved':
-        return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-green-500/10 text-green-500 border border-green-500/20">{t.common.resolved}</span>;
+  const getIcon = (severity: string) => {
+    switch (severity) {
+      case 'CRITICAL':
+        return <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" />;
+      case 'WARNING':
+        return <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />;
+      case 'INFO':
+        return <Info className="w-5 h-5 text-blue-500 shrink-0" />;
       default:
-        return null;
+        return <AlertCircle className="w-5 h-5 text-[var(--text-secondary)] shrink-0" />;
     }
-  };
-
-  const acknowledgeAlert = (id: string) => {
-    setAlerts(alerts.map(alert => 
-      alert.id === id ? { ...alert, status: 'Acknowledged' } : alert
-    ));
   };
 
   return (
     <div className="space-y-6 animate-fade-in pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-serif text-[var(--text-primary)] font-bold">{t.alerts.title}</h1>
-          <p className="text-[var(--text-secondary)] text-sm mt-1">{t.alerts.subtitle}</p>
+          <h1 className="text-3xl sm:text-4xl font-serif text-[var(--text-primary)] font-bold">{t.alerts.title}</h1>
+          <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-1">{t.alerts.subtitle}</p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {(['All', 'Critical', 'Warnings', 'Info'] as FilterType[]).map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setActiveFilter(filter)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                activeFilter === filter
+                  ? 'bg-[var(--accent)] text-white shadow-xs'
+                  : 'bg-[var(--surface)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--accent)]'
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+          <button
+            onClick={fetchAlerts}
+            disabled={loading}
+            className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--surface)] border border-[var(--border)] rounded-xl hover:border-[var(--accent)] transition-all cursor-pointer disabled:opacity-50"
+            title="Refresh Alerts"
+            aria-label="Refresh Alerts"
+          >
+            <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+          </button>
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-[var(--border)] pb-4 overflow-x-auto">
-        {[
-          { key: 'All', label: t.alerts.filterAll, count: alerts.length },
-          { key: 'Critical', label: t.alerts.filterCritical, count: alerts.filter(a => a.type === 'critical').length },
-          { key: 'Warnings', label: t.alerts.filterWarnings, count: alerts.filter(a => a.type === 'warning').length },
-          { key: 'Info', label: t.alerts.filterInfo, count: alerts.filter(a => a.type === 'info').length },
-        ].map(({ key, label, count }) => (
-          <button
-            key={key}
-            onClick={() => setActiveFilter(key as FilterType)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
-              activeFilter === key
-                ? 'bg-[var(--accent)] text-white shadow-sm'
-                : 'bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] border border-[var(--border)]'
-            }`}
-          >
-            <span>{label}</span>
-            <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-              activeFilter === key ? 'bg-white/20 text-white' : 'bg-[var(--surface-secondary)] text-[var(--text-secondary)]'
-            }`}>
-              {count}
-            </span>
-          </button>
-        ))}
-      </div>
+      {loading && alerts.length === 0 && (
+        <div className="py-20 text-center space-y-3">
+          <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-[var(--text-secondary)]">Checking colony telemetry alerts…</p>
+        </div>
+      )}
 
-      {/* Alerts List */}
-      <div className="space-y-4">
-        {filteredAlerts.length > 0 ? (
-          filteredAlerts.map((alert) => (
-            <div 
+      {error && (
+        <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400 flex items-center gap-3">
+          <AlertCircle size={18} className="shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {!loading && alerts.length === 0 && (
+        <div className="py-16 px-6 rounded-3xl bg-[var(--surface)] border border-[var(--border)] text-center max-w-lg mx-auto space-y-3 shadow-xs">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 border border-emerald-200 dark:border-emerald-900 flex items-center justify-center mx-auto">
+            <CheckCircle size={28} />
+          </div>
+          <h3 className="font-serif text-2xl font-bold text-[var(--text-primary)]">No Active Alerts</h3>
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+            All your smart hives and apiaries are reporting normal thermal, acoustic, and colony activity levels.
+          </p>
+        </div>
+      )}
+
+      {!loading && filteredAlerts.length > 0 && (
+        <div className="space-y-3">
+          {filteredAlerts.map((alert) => (
+            <div
               key={alert.id}
-              className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 hover:border-[var(--accent)] transition-all shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+              className={`p-5 rounded-2xl border transition-all duration-200 ${
+                !alert.readAt
+                  ? 'bg-[var(--surface)] border-[var(--accent)]/40 shadow-xs'
+                  : 'bg-[var(--surface)]/60 border-[var(--border)] opacity-85'
+              }`}
             >
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-[var(--surface-secondary)] rounded-xl border border-[var(--border)] shrink-0">
-                  {getIcon(alert.type)}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <h3 className="font-serif font-bold text-base text-[var(--text-primary)]">{alert.title}</h3>
-                    {getStatusBadge(alert.status)}
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3.5">
+                  {getIcon(alert.severity)}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="font-serif text-base font-bold text-[var(--text-primary)]">{alert.title}</h4>
+                      {alert.hiveId && (
+                        <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-full bg-[var(--surface-secondary)] text-[var(--accent)] border border-[var(--border)]">
+                          {alert.hiveId}
+                        </span>
+                      )}
+                      {!alert.readAt && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+                          NEW
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">{alert.message}</p>
+                    <p className="text-[11px] text-[var(--text-secondary)]/60 pt-1 font-mono">
+                      {new Date(alert.createdAt).toLocaleString('en-GB')} • Source: {alert.source}
+                    </p>
                   </div>
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed mb-2">{alert.description}</p>
-                  <div className="flex items-center gap-4 text-xs text-[var(--text-secondary)]">
-                    <span className="font-mono text-[var(--accent)] font-semibold">{alert.related}</span>
-                    <span className="flex items-center gap-1">
-                      <Clock size={12} /> {alert.timestamp}
-                    </span>
-                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
-                {alert.status === 'New' && (
-                  <button 
-                    onClick={() => acknowledgeAlert(alert.id)}
-                    className="px-3.5 py-1.5 rounded-xl border border-[var(--border)] text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-secondary)] hover:border-[var(--accent)] transition-all flex items-center gap-1.5 cursor-pointer"
+                {!alert.readAt && (
+                  <button
+                    onClick={() => handleMarkAsRead(alert.id)}
+                    className="shrink-0 px-3 py-1.5 text-xs font-semibold text-[var(--accent)] hover:bg-[var(--surface-secondary)] rounded-lg transition-colors border border-[var(--border)] cursor-pointer"
                   >
-                    <Check size={13} className="text-[var(--accent)]" />
-                    <span>{t.alerts.acknowledge}</span>
+                    Acknowledge
                   </button>
                 )}
               </div>
             </div>
-          ))
-        ) : (
-          <div className="text-center py-12 bg-[var(--surface)] border border-[var(--border)] rounded-2xl">
-            <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3 opacity-60" />
-            <h3 className="font-serif font-bold text-lg text-[var(--text-primary)]">{t.alerts.emptyTitle}</h3>
-            <p className="text-xs text-[var(--text-secondary)] mt-1">{t.alerts.emptyDesc}</p>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,22 +1,31 @@
 import React, { useState } from 'react';
-import { ShieldAlert, ArrowRight, AlertTriangle, Activity, Thermometer, Droplets, Weight } from 'lucide-react';
+import { ShieldAlert, ArrowRight, AlertTriangle, Activity, Thermometer, Droplets, Weight, CheckCircle2 } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { Hive } from '@/api/hives';
 
-export const ColonyInsight: React.FC = () => {
+interface ColonyInsightProps {
+  hive?: Hive | null;
+}
+
+export const ColonyInsight: React.FC<ColonyInsightProps> = ({ hive }) => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const observedData = {
-    hiveId: 'H-104',
-    acousticFreq: '196.4 Hz',
-    acousticDrop: '18.2%',
-    temperature: '35.1 °C',
-    weight: '38.2 kg',
-    weightDelta: '−0.5 kg',
-    humidity: '61%',
-  };
+  const hiveId = hive?.id || 'H-101';
+  const hiveName = hive?.name || 'Smart Hive';
+  const latestSensor = hive?.telemetry && hive.telemetry.length > 0 ? hive.telemetry[0] : null;
+
+  const acousticFreq = latestSensor?.acousticLevel != null ? `${Number(latestSensor.acousticLevel).toFixed(1)} Hz` : '240.0 Hz';
+  const acousticVal = latestSensor?.acousticLevel != null ? Number(latestSensor.acousticLevel) : null;
+  const acousticDrop = acousticVal != null && acousticVal < 220 
+    ? `${Math.round(((240 - acousticVal) / 240) * 100)}%` 
+    : null;
+  const temperature = latestSensor?.temperatureC != null ? `${Number(latestSensor.temperatureC).toFixed(1)} °C` : '35.0 °C';
+  const weight = latestSensor?.weightKg != null ? `${Number(latestSensor.weightKg).toFixed(1)} kg` : '35.0 kg';
+  const humidity = latestSensor?.humidityPct != null ? `${Math.round(Number(latestSensor.humidityPct))}%` : '60%';
+  const isWarning = hive?.status === 'WATCH' || hive?.status === 'INSPECT' || Boolean(acousticDrop);
 
   return (
     <>
@@ -32,16 +41,25 @@ export const ColonyInsight: React.FC = () => {
             </span>
           </div>
           <p className="text-[11px] text-[var(--text-secondary)] mb-5 break-words">
-            {t.intelligence.colonyInsightSubtitle}
+            {t.intelligence.colonyInsightSubtitle} ({hiveName})
           </p>
 
-          {/* Alert banner */}
-          <div className="mb-5 p-3 rounded-xl bg-amber-500/8 border border-amber-500/20 flex items-start gap-2 min-w-0">
-            <AlertTriangle size={15} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-            <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed break-words">
-              <span className="font-bold">Hive {observedData.hiveId}:</span> {t.intelligence.riskFlagText}
-            </p>
-          </div>
+          {/* Alert / Nominal banner */}
+          {isWarning ? (
+            <div className="mb-5 p-3 rounded-xl bg-amber-500/8 border border-amber-500/20 flex items-start gap-2 min-w-0">
+              <AlertTriangle size={15} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed break-words">
+                <span className="font-bold">Colony {hiveName} ({hiveId}):</span> {t.intelligence.riskFlagText}
+              </p>
+            </div>
+          ) : (
+            <div className="mb-5 p-3 rounded-xl bg-green-500/8 border border-green-500/20 flex items-start gap-2 min-w-0">
+              <CheckCircle2 size={15} className="text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-green-700 dark:text-green-300 leading-relaxed break-words">
+                <span className="font-bold">Colony {hiveName} ({hiveId}):</span> Telemetry within nominal baseline range (240 Hz / 35°C).
+              </p>
+            </div>
+          )}
 
           {/* Observed metrics grid */}
           <div className="space-y-3 min-w-0">
@@ -50,30 +68,29 @@ export const ColonyInsight: React.FC = () => {
                 <Activity size={14} className="shrink-0" /> <span className="truncate">{t.smartHives.acousticFreq}</span>
               </span>
               <span className="font-mono font-bold text-[var(--text-primary)] shrink-0 text-right">
-                {observedData.acousticFreq}
-                <span className="text-[10px] text-amber-600 ml-1">↓ {observedData.acousticDrop}</span>
+                {acousticFreq}
+                {acousticDrop && <span className="text-[10px] text-amber-600 ml-1">↓ {acousticDrop}</span>}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs sm:text-sm py-2.5 border-b border-[var(--border)] gap-2">
               <span className="flex items-center gap-2 text-[var(--text-secondary)] min-w-0 truncate">
                 <Thermometer size={14} className="shrink-0" /> <span className="truncate">{t.smartHives.temp}</span>
               </span>
-              <span className="font-mono font-bold text-amber-600 dark:text-amber-400 shrink-0">{observedData.temperature}</span>
+              <span className="font-mono font-bold text-[var(--text-primary)] shrink-0">{temperature}</span>
             </div>
             <div className="flex items-center justify-between text-xs sm:text-sm py-2.5 border-b border-[var(--border)] gap-2">
               <span className="flex items-center gap-2 text-[var(--text-secondary)] min-w-0 truncate">
                 <Weight size={14} className="shrink-0" /> <span className="truncate">{t.smartHives.weight}</span>
               </span>
               <span className="font-mono font-bold text-[var(--text-primary)] shrink-0 text-right">
-                {observedData.weight}
-                <span className="text-[10px] text-[var(--warning)] ml-1">{observedData.weightDelta}</span>
+                {weight}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs sm:text-sm py-2.5 gap-2">
               <span className="flex items-center gap-2 text-[var(--text-secondary)] min-w-0 truncate">
                 <Droplets size={14} className="shrink-0" /> <span className="truncate">{t.smartHives.humidity}</span>
               </span>
-              <span className="font-mono font-bold text-[var(--text-primary)] shrink-0">{observedData.humidity}</span>
+              <span className="font-mono font-bold text-[var(--text-primary)] shrink-0">{humidity}</span>
             </div>
           </div>
         </div>
@@ -87,7 +104,7 @@ export const ColonyInsight: React.FC = () => {
         </button>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={`${t.intelligence.colonyInsightTitle}: Hive H-104`}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={`${t.intelligence.colonyInsightTitle}: ${hiveName} (${hiveId})`}>
         <div className="space-y-4 text-xs font-sans text-[var(--text-secondary)]">
           <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[var(--text-primary)]">
             <div className="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400 mb-1">
@@ -107,14 +124,16 @@ export const ColonyInsight: React.FC = () => {
             <p className="leading-relaxed italic">{t.overview.confidenceLimitationText}</p>
           </div>
 
-          <div className="pt-2 border-t border-[var(--border)] flex justify-between items-center">
-            <Link
-              to="/smart-hives/H-104"
-              className="text-[var(--accent)] font-semibold hover:underline text-xs"
-            >
-              {t.overview.openTelemetry} →
-            </Link>
-          </div>
+          {hive && (
+            <div className="pt-2 border-t border-[var(--border)] flex justify-between items-center">
+              <Link
+                to={`/smart-hives/${encodeURIComponent(hive.id)}`}
+                className="text-[var(--accent)] font-semibold hover:underline text-xs"
+              >
+                {t.overview.openTelemetry} →
+              </Link>
+            </div>
+          )}
         </div>
       </Modal>
     </>

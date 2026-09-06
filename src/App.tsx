@@ -1,5 +1,6 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import AppShell from './components/layout/AppShell';
+import EntryLandingPage from './pages/EntryLandingPage';
 import LandingPage from './pages/LandingPage';
 import OverviewPage from './pages/OverviewPage';
 import { SmartHivesPage } from './pages/SmartHivesPage';
@@ -12,19 +13,53 @@ import AlertsPage from './pages/AlertsPage';
 import ReportsPage from './pages/ReportsPage';
 import SettingsPage from './pages/SettingsPage';
 import { VerifyPage } from './pages/VerifyPage';
+import { useAuth } from './contexts/AuthContext';
+
+// Guard: Redirect unauthenticated users to entry landing
+function RequireAuth({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isGuest, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm text-[var(--text-secondary)] font-medium">Loading HoneyChain…</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated && !isGuest) {
+    return <Navigate to="/" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+}
 
 function App() {
   return (
     <Routes>
-      {/* Consumer verification - standalone page without sidebar */}
+      {/* ── Entry / Authentication (no auth required) ── */}
+      <Route path="/" element={<EntryLandingPage />} />
+
+      {/* ── Consumer QR verification — publicly accessible ── */}
       <Route path="/verify" element={<Navigate to="/verify/HC-2026-0142" replace />} />
       <Route path="/verify/:batchId" element={<VerifyPage />} />
 
-      {/* Main application with persistent AppShell */}
-      <Route element={<AppShell />}>
-        <Route path="/" element={<LandingPage />} />
+      {/* ── Main application with persistent AppShell (requires auth OR guest) ── */}
+      <Route
+        element={
+          <RequireAuth>
+            <AppShell />
+          </RequireAuth>
+        }
+      >
+        {/* Former landing page is now the platform home */}
+        <Route path="/home" element={<LandingPage />} />
         <Route path="/overview" element={<OverviewPage />} />
-        
+
         {/* Smart Hives */}
         <Route path="/smart-hives" element={<SmartHivesPage />} />
         <Route path="/smart-hives/:hiveId" element={<HiveDetailPage />} />
@@ -44,8 +79,8 @@ function App() {
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
 
-        {/* Wildcard Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Wildcard fallback */}
+        <Route path="*" element={<Navigate to="/home" replace />} />
       </Route>
     </Routes>
   );

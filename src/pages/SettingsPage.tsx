@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
-import { User, Bell, Shield, Globe, Save, Edit2, CheckCircle2, Eye, EyeOff, Lock, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Bell, Shield, Globe, Save, Edit2, CheckCircle2, Eye, EyeOff, Lock, X, AlertTriangle } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { currentUser as defaultUser } from '@/data/users';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { LanguageSelector } from '@/components/ui/LanguageSelector';
+import { useAuth } from '@/contexts/AuthContext';
 
 const SettingsPage = () => {
   const { t } = useTranslation();
+  const { user, isGuest } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'preferences' | 'notifications' | 'api'>('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [savedMessage, setSavedMessage] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: defaultUser.name,
-    email: 'ravi.kumar@honeychain.org',
-    role: defaultUser.role,
+    name: user?.name || defaultUser.name,
+    email: user?.email || 'ravi.kumar@honeychain.org',
+    role: user?.role || defaultUser.role,
     apiary: 'Royal Crest Apiaries (Uttar Pradesh)',
-    location: defaultUser.location,
+    location: user?.location || defaultUser.location,
     tempUnit: 'Celsius (°C)',
     weightUnit: 'Kilograms (kg)',
     language: 'English (India)',
@@ -25,6 +27,18 @@ const SettingsPage = () => {
     weeklyReport: true,
     anomalyDetectionAlerts: true,
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+        role: user.role || prev.role,
+        location: user.location || prev.location,
+      }));
+    }
+  }, [user]);
 
   const handleSave = () => {
     setIsEditing(false);
@@ -79,6 +93,16 @@ const SettingsPage = () => {
           </div>
         )}
       </div>
+
+      {isGuest && (
+        <div className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-sm text-amber-800 dark:text-amber-300">
+          <AlertTriangle size={20} className="shrink-0 text-amber-600" />
+          <div className="flex-1">
+            <p className="font-semibold">{t.guest.badge}: {t.guest.modeBanner}</p>
+            <p className="text-xs opacity-80 mt-0.5">{t.guest.restrictionNotice}</p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Navigation Sidebar */}

@@ -1,7 +1,8 @@
-import React from 'react';
-import { CheckCircle2, ArrowRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { CheckCircle2, ArrowRight, CircleAlert, LoaderCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { publicApi, type PublicVerification } from '@/api';
 
 interface QRVerificationProps {
   batchId?: string;
@@ -9,6 +10,23 @@ interface QRVerificationProps {
 
 export const QRVerification: React.FC<QRVerificationProps> = ({ batchId = 'HC-2026-0142' }) => {
   const { t } = useTranslation();
+  const [result, setResult] = useState<PublicVerification | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    setResult(null);
+    setFailed(false);
+    publicApi.batch(batchId).then((data) => active && setResult(data)).catch(() => active && setFailed(true));
+    return () => { active = false; };
+  }, [batchId]);
+
+  const verified = result?.verificationStatus === 'VERIFIED_RECORD';
+  const pending = !result && !failed;
+  const label = result?.batch?.id || batchId;
+  const name = result?.batch?.name || '—';
+  const location = result?.batch?.location || '—';
+  const harvestedOn = result?.batch?.harvestDate ? new Date(result.batch.harvestDate).toLocaleDateString() : '—';
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center">
@@ -83,10 +101,10 @@ export const QRVerification: React.FC<QRVerificationProps> = ({ batchId = 'HC-20
 
             {/* Verification Status Pill */}
             <div className="w-full bg-[var(--surface-secondary)] p-2.5 rounded-xl border border-[var(--border)]">
-              <span className="font-mono text-xs font-bold text-[var(--accent)] block">{batchId}</span>
-              <div className="flex items-center justify-center gap-1 text-green-600 dark:text-green-400 text-[11px] font-bold mt-0.5">
-                <CheckCircle2 size={12} />
-                <span>{t.consumer.verifiedBatch} ✓</span>
+              <span className="font-mono text-xs font-bold text-[var(--accent)] block">{label}</span>
+              <div className={`flex items-center justify-center gap-1 text-[11px] font-bold mt-0.5 ${verified ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                {pending ? <LoaderCircle size={12} className="animate-spin" /> : verified ? <CheckCircle2 size={12} /> : <CircleAlert size={12} />}
+                <span>{pending ? 'Checking record…' : verified ? t.consumer.verifiedBatch : failed ? 'Record unavailable' : 'Record not independently verified'}</span>
               </div>
             </div>
           </div>
@@ -109,16 +127,16 @@ export const QRVerification: React.FC<QRVerificationProps> = ({ batchId = 'HC-20
           {/* Screen Content */}
           <div className="flex-1 rounded-[30px] bg-[var(--surface)] p-5 flex flex-col items-center justify-between text-center overflow-hidden border border-[var(--border)]">
             <div className="space-y-1">
-              <div className="inline-flex items-center gap-1 text-green-700 dark:text-green-400 bg-green-500/10 px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-green-500/20">
-                <CheckCircle2 size={11} />
-                <span>{t.consumer.verifiedBatch}</span>
+              <div className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${verified ? 'text-green-700 dark:text-green-400 bg-green-500/10 border-green-500/20' : 'text-amber-700 dark:text-amber-400 bg-amber-500/10 border-amber-500/20'}`}>
+                {verified ? <CheckCircle2 size={11} /> : <CircleAlert size={11} />}
+                <span>{verified ? t.consumer.verifiedBatch : pending ? 'Checking…' : 'Recorded batch'}</span>
               </div>
               <span className="font-mono text-[10px] text-[var(--text-secondary)] block uppercase tracking-wider">
-                {t.consumer.batchId}: {batchId}
+                {t.consumer.batchId}: {label}
               </span>
-              <h3 className="font-serif font-bold text-lg text-[var(--text-primary)]">MUSTARD GOLD</h3>
-              <p className="text-[11px] text-[var(--text-secondary)]">{t.market.locationUP} • {t.market.floralMustard}</p>
-              <p className="text-[10px] text-[var(--accent)] font-medium">{t.consumer.harvestedOn} 28 Aug 2026</p>
+              <h3 className="font-serif font-bold text-lg text-[var(--text-primary)]">{name}</h3>
+              <p className="text-[11px] text-[var(--text-secondary)]">{location}</p>
+              <p className="text-[10px] text-[var(--accent)] font-medium">{t.consumer.harvestedOn} {harvestedOn}</p>
             </div>
 
             {/* Honey Jar Visual on Coaster */}

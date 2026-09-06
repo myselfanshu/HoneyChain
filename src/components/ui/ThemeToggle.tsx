@@ -7,9 +7,7 @@ export interface ThemeToggleProps {
 }
 
 export function ThemeToggle({ className = '' }: ThemeToggleProps) {
-  // Safe fallback if useTheme is not yet implemented or context is missing
-  const themeContext = useTheme ? useTheme() : { theme: 'light', toggleTheme: () => {} };
-  const { theme, toggleTheme } = themeContext;
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <button

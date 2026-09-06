@@ -1,12 +1,17 @@
 import React from 'react';
 import { User, Factory, Package, Truck, Store, CheckCircle } from 'lucide-react';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const ActorsInvolved: React.FC = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
+
+  const beekeeperName = user?.name || 'Registered Beekeeper';
+  const beekeeperLocation = user?.location || 'Verified Apiary Node';
 
   const actors = [
-    { role: t.traceability.roleBeekeeper, name: 'Ravi Kumar', station: 'Royal Crest Apiaries (UP)', icon: User },
+    { role: t.traceability.roleBeekeeper, name: beekeeperName, station: `${beekeeperLocation} (Harvest Station)`, icon: User },
     { role: t.traceability.roleProcessor, name: 'HoneyPure Pvt. Ltd.', station: 'Haryana Facility', icon: Factory },
     { role: t.traceability.rolePacker, name: 'PurePack Industries', station: 'Delhi Packaging Hub', icon: Package },
     { role: t.traceability.roleDistributor, name: 'GreenHive Supplies', station: 'Maharashtra Logistics', icon: Truck },

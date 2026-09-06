@@ -1,137 +1,95 @@
 import React, { useState } from 'react';
-import { Thermometer, Droplets, Weight, Activity, Shield, ChevronDown, ChevronUp } from 'lucide-react';
+import { Thermometer, Droplets, Weight, Activity, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { Hive } from '@/api/hives';
 
-type StatusLevel = 'Optimal' | 'Elevated' | 'Warning' | 'Critical';
-
-interface Condition {
-  icon: React.ElementType;
-  label: string;
-  value: string;
-  status: StatusLevel;
-  updatedAt: string;
-  detail: string;
-  iconColor?: string;
+interface LiveConditionsProps {
+  hives?: Hive[];
 }
 
-const statusStyles: Record<StatusLevel, string> = {
-  Optimal:  'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20',
-  Elevated: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
-  Warning:  'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20',
-  Critical: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
-};
-
-const LiveConditions: React.FC = () => {
+export const LiveConditions: React.FC<LiveConditionsProps> = ({ hives = [] }) => {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
-  const conditions: Condition[] = [
+  // Find latest telemetry across all user's hives
+  const allTelemetry = hives.flatMap((h) => (h.telemetry || []));
+  const latest = allTelemetry.length > 0
+    ? allTelemetry.sort((a, b) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime())[0]
+    : null;
+
+  const tempVal = latest?.temperatureC != null ? `${Number(latest.temperatureC).toFixed(1)} °C` : '—';
+  const humidityVal = latest?.humidityPct != null ? `${Math.round(Number(latest.humidityPct))}%` : '—';
+  const weightVal = latest?.weightKg != null ? `${Number(latest.weightKg).toFixed(1)} kg` : '—';
+  const activityVal = latest?.colonyActivity != null ? `${Math.round(Number(latest.colonyActivity))}%` : '—';
+
+  const conditions = [
     {
       icon: Thermometer,
       label: t.overview.condTemp,
-      value: '32.8 °C',
-      status: 'Optimal',
-      updatedAt: `2 min`,
-      detail: t.overview.condTempDetail,
+      value: tempVal,
+      status: latest ? 'Optimal' : 'Inactive',
+      detail: latest ? 'Latest sensor reading' : 'No sensor connected',
     },
     {
       icon: Droplets,
       label: t.overview.condHumidity,
-      value: '58%',
-      status: 'Optimal',
-      updatedAt: `2 min`,
-      detail: t.overview.condHumidityDetail,
+      value: humidityVal,
+      status: latest ? 'Optimal' : 'Inactive',
+      detail: latest ? 'Relative nest humidity' : 'No sensor connected',
     },
     {
       icon: Weight,
       label: t.overview.condWeight,
-      value: '42.1 kg',
-      status: 'Optimal',
-      updatedAt: `5 min`,
-      detail: t.overview.condWeightDetail,
+      value: weightVal,
+      status: latest ? 'Optimal' : 'Inactive',
+      detail: latest ? 'Latest hive mass' : 'No scale connected',
     },
     {
       icon: Activity,
       label: t.overview.condActivity,
-      value: t.common.optimal,
-      status: 'Optimal',
-      updatedAt: `1 min`,
-      detail: t.overview.condActivityDetail,
-    },
-    {
-      icon: Shield,
-      label: t.overview.condRisk,
-      value: t.intelligence.observed,
-      status: 'Elevated',
-      updatedAt: `8 min`,
-      detail: t.overview.condRiskDetail,
-      iconColor: 'text-[var(--warning)]',
+      value: activityVal,
+      status: latest ? 'Optimal' : 'Inactive',
+      detail: latest ? 'Flight & acoustic index' : 'No acoustic sensor connected',
     },
   ];
 
-  const getLocalizedStatus = (status: StatusLevel) => {
-    switch (status) {
-      case 'Optimal': return t.common.optimal;
-      case 'Elevated': return t.common.elevated;
-      case 'Warning': return t.common.warning;
-      case 'Critical': return t.common.critical;
-      default: return status;
-    }
-  };
-
-  const visibleConditions = expanded ? conditions : conditions.slice(0, 3);
-
   return (
-    <div className="bg-[var(--surface)] p-5 sm:p-6 rounded-xl border border-[var(--border)]">
-      <h3 className="text-base font-serif font-bold text-[var(--text-primary)] mb-4">
-        {t.overview.liveConditions} <span className="text-sm font-sans font-normal text-[var(--text-secondary)]">({t.overview.average})</span>
-      </h3>
+    <div className="bg-[var(--surface)] p-5 sm:p-6 rounded-3xl border border-[var(--border)] h-full flex flex-col justify-between shadow-xs">
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-serif font-bold text-[var(--text-primary)]">{t.overview.liveConditions}</h3>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--surface-secondary)] text-[var(--text-secondary)] border border-[var(--border)]">
+            {latest ? 'TELEMETRY ACTIVE' : 'NO SENSORS'}
+          </span>
+        </div>
 
-      <div className="space-y-0">
-        {visibleConditions.map((cond, idx) => {
-          const Icon = cond.icon;
-          const isLast = idx === visibleConditions.length - 1;
-          return (
+        <div className="space-y-2.5">
+          {conditions.slice(0, expanded ? undefined : 3).map((item) => (
             <div
-              key={idx}
-              className={`py-3 ${!isLast ? 'border-b border-[var(--border)]' : ''} transition-all`}
+              key={item.label}
+              className="p-3 rounded-2xl bg-[var(--surface-secondary)]/50 border border-[var(--border)] flex items-center justify-between"
             >
-              {/* Top row: icon + label + value */}
-              <div className="flex items-center justify-between">
-                <div className={`flex items-center gap-2.5 ${cond.iconColor ?? 'text-[var(--text-secondary)]'}`}>
-                  <Icon size={16} className="shrink-0" />
-                  <span className="font-sans text-sm text-[var(--text-secondary)]">{cond.label}</span>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--accent)] shrink-0">
+                  <item.icon size={15} />
                 </div>
-                <span className="font-sans font-semibold text-sm text-[var(--text-primary)]">{cond.value}</span>
+                <div>
+                  <p className="text-xs font-medium text-[var(--text-secondary)]">{item.label}</p>
+                  <p className="text-[10px] text-[var(--text-secondary)]/70">{item.detail}</p>
+                </div>
               </div>
-
-              {/* Expanded detail row */}
-              {expanded && (
-                <div className="mt-2 flex items-start justify-between gap-3 pl-6">
-                  <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed flex-1">{cond.detail}</p>
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border ${statusStyles[cond.status]}`}>
-                      {getLocalizedStatus(cond.status)}
-                    </span>
-                    <span className="text-[10px] text-[var(--text-secondary)] font-mono">{cond.updatedAt}</span>
-                  </div>
-                </div>
-              )}
+              <span className="font-serif font-bold text-sm text-[var(--text-primary)]">{item.value}</span>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
       <button
-        onClick={() => setExpanded((v) => !v)}
-        className="mt-4 text-left font-sans text-sm text-[var(--accent)] hover:underline flex items-center gap-1 transition-colors cursor-pointer"
-        aria-expanded={expanded}
+        onClick={() => setExpanded(!expanded)}
+        className="mt-3 w-full py-2 text-xs text-[var(--text-secondary)] hover:text-[var(--accent)] flex items-center justify-center gap-1 transition-colors cursor-pointer"
       >
-        {expanded ? (
-          <>{t.overview.showLess} <ChevronUp size={14} /></>
-        ) : (
-          <>{t.overview.viewAllConditions} <ChevronDown size={14} /></>
-        )}
+        <span>{expanded ? 'Show Less' : 'Show All Metrics'}</span>
+        {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </button>
     </div>
   );

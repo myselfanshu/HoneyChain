@@ -496,6 +496,88 @@ export interface TranslationDictionary {
     registeredDate: string;
   };
 
+  // New Entry Landing Page
+  entry: {
+    tagline: string;
+    taglineLead: string;
+    taglineSub: string;
+    subtitle: string;
+    trustLine: string;
+    signIn: string;
+    createAccount: string;
+    guestAccess: string;
+    guestDesc: string;
+    verifyJar: string;
+    verifyJarDesc: string;
+    pillar1Title: string;
+    pillar1Desc: string;
+    pillar2Title: string;
+    pillar2Desc: string;
+    pillar3Title: string;
+    pillar3Desc: string;
+    backToEntry: string;
+  };
+
+  // Authentication Forms
+  auth: {
+    signInTitle: string;
+    signInSubtitle: string;
+    registerTitle: string;
+    registerSubtitle: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    fullName: string;
+    rolePlaceholder: string;
+    roleBeekeeper: string;
+    roleAdmin: string;
+    roleInspector: string;
+    signInButton: string;
+    registerButton: string;
+    guestButton: string;
+    alreadyHaveAccount: string;
+    dontHaveAccount: string;
+    switchToRegister: string;
+    switchToSignIn: string;
+    orContinueAs: string;
+    captchaTitle: string;
+    captchaPending: string;
+    captchaVerified: string;
+    demoSecurityMode: string;
+    demoSecurityDesc: string;
+    passwordMismatch: string;
+    passwordTooShort: string;
+    invalidEmail: string;
+    nameRequired: string;
+    authError: string;
+    signingIn: string;
+    registering: string;
+    enteringAsGuest: string;
+    loggedInAs: string;
+    signOut: string;
+    signOutConfirm: string;
+    welcomeBack: string;
+    accountCreated: string;
+    guestWelcome: string;
+    forgotPassword: string;
+    passwordStrong: string;
+    passwordWeak: string;
+    showPassword: string;
+    hidePassword: string;
+  };
+
+  // Guest Mode
+  guest: {
+    badge: string;
+    modeBanner: string;
+    restrictionNotice: string;
+    signInPrompt: string;
+    createAccountPrompt: string;
+    canView: string;
+    cannotModify: string;
+    exploreMode: string;
+  };
+
   // Consumer Verification & Story Page
   consumer: {
     verifiedProvenance: string;

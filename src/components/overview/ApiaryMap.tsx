@@ -1,148 +1,196 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, ArrowRight } from 'lucide-react';
+import { MapPin, ArrowRight, Plus } from 'lucide-react';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { Hive } from '@/api/hives';
 
-interface HiveNode {
-  id: string;
-  x: number;
-  y: number;
-  status: 'Healthy' | 'Watch' | 'Inspect';
-  temp: number;
-  weight: number;
+interface ApiaryMapProps {
+  hives?: Hive[];
 }
 
-const hivesOnMap: HiveNode[] = [
-  { id: 'H-101', x: 80, y: 110, status: 'Healthy', temp: 34.5, weight: 42.1 },
-  { id: 'H-102', x: 155, y: 80, status: 'Healthy', temp: 34.2, weight: 45.3 },
-  { id: 'H-103', x: 230, y: 130, status: 'Watch', temp: 34.8, weight: 41.5 },
-  { id: 'H-104', x: 175, y: 195, status: 'Inspect', temp: 32.8, weight: 42.1 },
-  { id: 'H-105', x: 295, y: 100, status: 'Healthy', temp: 33.9, weight: 39.8 },
-  { id: 'H-106', x: 320, y: 180, status: 'Healthy', temp: 34.1, weight: 44.0 },
-  { id: 'H-107', x: 95, y: 220, status: 'Watch', temp: 35.0, weight: 37.6 },
-];
-
-export const ApiaryMap: React.FC = () => {
+export const ApiaryMap: React.FC<ApiaryMapProps> = ({ hives = [] }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [hoveredHive, setHoveredHive] = useState<HiveNode | null>(null);
+  const [hoveredHive, setHoveredHive] = useState<Hive | null>(null);
+
+  // Default coordinate slots for up to 8 hives on the topo grid
+  const slotCoords = [
+    { x: 80, y: 110 },
+    { x: 155, y: 80 },
+    { x: 230, y: 130 },
+    { x: 175, y: 195 },
+    { x: 295, y: 100 },
+    { x: 320, y: 180 },
+    { x: 95, y: 220 },
+    { x: 220, y: 240 },
+  ];
+
+  const hiveNodes = hives.map((hive, idx) => {
+    const slot = slotCoords[idx % slotCoords.length] || { x: 100 + (idx * 30) % 200, y: 100 + (idx * 25) % 120 };
+    const latestTele = hive.telemetry?.[0];
+    return {
+      hive,
+      id: hive.id,
+      name: hive.name,
+      x: slot.x,
+      y: slot.y,
+      status: hive.status || 'HEALTHY',
+      temp: latestTele?.temperatureC != null ? `${Number(latestTele.temperatureC).toFixed(1)}°C` : '—',
+      weight: latestTele?.weightKg != null ? `${Number(latestTele.weightKg).toFixed(1)} kg` : '—',
+    };
+  });
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Healthy': return 'var(--success)';
-      case 'Watch': return 'var(--warning)';
-      case 'Inspect': return 'var(--danger)';
-      default: return 'var(--accent)';
-    }
+    const s = status.toUpperCase();
+    if (s === 'HEALTHY') return 'var(--success)';
+    if (s === 'WATCH') return 'var(--warning)';
+    if (s === 'INSPECT') return 'var(--danger)';
+    return 'var(--accent)';
   };
 
   const getLocalizedStatus = (status: string) => {
-    switch (status) {
-      case 'Healthy': return t.common.healthy;
-      case 'Watch': return t.common.watch;
-      case 'Inspect': return t.common.inspect;
-      default: return status;
-    }
+    const s = status.toUpperCase();
+    if (s === 'HEALTHY') return t.common.healthy;
+    if (s === 'WATCH') return t.common.watch;
+    if (s === 'INSPECT') return t.common.inspect;
+    return status;
   };
 
   return (
-    <div className="bg-[var(--surface)] p-6 sm:p-7 rounded-3xl border border-[var(--border)] h-full flex flex-col justify-between shadow-sm">
+    <div className="bg-[var(--surface)] p-6 sm:p-7 rounded-3xl border border-[var(--border)] h-full flex flex-col justify-between shadow-xs">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <MapPin size={20} className="text-[var(--accent)]" />
           <h3 className="text-xl font-serif font-bold text-[var(--text-primary)]">{t.overview.spatialMap}</h3>
         </div>
-        <span className="text-[11px] font-mono text-[var(--text-secondary)]">{t.overview.sectorNodes}</span>
+        <span className="text-[11px] font-mono text-[var(--text-secondary)]">
+          {hives.length} {hives.length === 1 ? 'Hive Node' : 'Hive Nodes'}
+        </span>
       </div>
 
       <div className="flex-1 rounded-2xl bg-[var(--surface-secondary)]/60 overflow-hidden relative min-h-[290px] border border-[var(--border)] flex items-center justify-center p-2">
         <svg viewBox="0 0 400 280" className="w-full h-full object-cover">
           {/* Topographic field contours */}
-          <path d="M0,40 Q120,10 210,50 T400,20 L400,280 L0,280 Z" fill="var(--surface)" opacity="0.4" />
-          <path d="M0,130 Q160,80 260,160 T400,100 L400,280 L0,280 Z" fill="var(--surface-secondary)" opacity="0.6" />
-          
-          {/* River / Floral Brook */}
-          <path d="M-10,240 Q100,170 200,230 T420,190" fill="none" stroke="var(--border)" strokeWidth="8" opacity="0.5" />
-          <path d="M-10,240 Q100,170 200,230 T420,190" fill="none" stroke="var(--accent)" strokeWidth="1" strokeDasharray="4,4" opacity="0.4" />
+          <path d="M 30,50 Q 150,20 280,60 T 380,40" fill="none" stroke="var(--border)" strokeWidth="1" strokeDasharray="3,3" />
+          <path d="M 20,120 Q 120,90 250,140 T 390,110" fill="none" stroke="var(--border)" strokeWidth="1" strokeDasharray="4,4" />
+          <path d="M 40,200 Q 170,170 300,220 T 370,190" fill="none" stroke="var(--border)" strokeWidth="1" strokeDasharray="3,3" />
+          <path d="M 10,260 Q 140,240 270,270 T 390,250" fill="none" stroke="var(--border)" strokeWidth="1" strokeDasharray="5,5" />
 
-          {/* Interactive Hive Nodes */}
-          {hivesOnMap.map((hive) => {
-            const color = getStatusColor(hive.status);
-            const isHovered = hoveredHive?.id === hive.id;
+          {/* Flora / Apiary boundary */}
+          <rect x="25" y="35" width="350" height="215" rx="16" fill="none" stroke="var(--accent)" strokeWidth="1" strokeOpacity="0.25" strokeDasharray="6,4" />
+          <text x="35" y="52" fill="var(--text-secondary)" fontSize="9" fontFamily="monospace" opacity="0.7">APIARY SECTOR — REGISTERED COLONIES</text>
 
+          {/* Hive Nodes */}
+          {hiveNodes.map((node) => {
+            const isHovered = hoveredHive?.id === node.id;
+            const col = getStatusColor(node.status);
             return (
-              <g 
-                key={hive.id} 
-                transform={`translate(${hive.x}, ${hive.y})`}
-                className="cursor-pointer transition-transform duration-200"
-                onClick={() => navigate(`/smart-hives/${hive.id}`)}
-                onMouseEnter={() => setHoveredHive(hive)}
+              <g
+                key={node.id}
+                className="cursor-pointer transition-all duration-200"
+                onClick={() => navigate(`/smart-hives/${encodeURIComponent(node.id)}`)}
+                onMouseEnter={() => setHoveredHive(node.hive)}
                 onMouseLeave={() => setHoveredHive(null)}
               >
-                {/* Ping animation circle */}
-                {isHovered && (
-                  <circle cx="13" cy="25" r="18" fill={color} opacity="0.25" className="animate-ping" />
+                {/* Pulse ring for watch/inspect */}
+                {(node.status === 'WATCH' || node.status === 'INSPECT') && (
+                  <circle
+                    cx={node.x}
+                    cy={node.y}
+                    r={isHovered ? 18 : 13}
+                    fill={col}
+                    fillOpacity="0.2"
+                    className="animate-pulse"
+                  />
                 )}
-                
-                {/* Hexagonal Base */}
-                <polygon 
-                  points="0,15 13,0 26,15 26,35 13,50 0,35" 
-                  fill={color} 
-                  opacity={isHovered ? 0.35 : 0.18} 
-                  stroke={color} 
-                  strokeWidth={isHovered ? 2.5 : 1.5} 
+                {/* Outer ring */}
+                <circle
+                  cx={node.x}
+                  cy={node.y}
+                  r={isHovered ? 13 : 9}
+                  fill="var(--surface)"
+                  stroke={col}
+                  strokeWidth={isHovered ? 3 : 2}
+                  className="transition-all duration-150"
                 />
-                
-                {/* Hive Core Node */}
-                <circle cx="13" cy="25" r={isHovered ? 6 : 5} fill={color} />
-
-                {/* Hive Label */}
-                <rect x="-2" y="-14" width="30" height="13" rx="3" fill="var(--surface)" stroke="var(--border)" strokeWidth="0.5" />
-                <text 
-                  x="13" 
-                  y="-5" 
-                  fontSize="9" 
-                  fontWeight="bold" 
-                  textAnchor="middle" 
-                  fill="var(--text-primary)" 
-                  fontFamily="sans-serif"
+                {/* Center dot */}
+                <circle
+                  cx={node.x}
+                  cy={node.y}
+                  r={isHovered ? 5 : 3.5}
+                  fill={col}
+                />
+                {/* Label */}
+                <text
+                  x={node.x}
+                  y={node.y - 12}
+                  textAnchor="middle"
+                  fill="var(--text-primary)"
+                  fontSize="9.5"
+                  fontWeight="bold"
+                  fontFamily="monospace"
+                  className="pointer-events-none select-none"
                 >
-                  {hive.id}
+                  {node.id}
                 </text>
               </g>
             );
           })}
         </svg>
 
-        {/* Hover Tooltip Overlay */}
+        {/* Empty state overlay if no hives */}
+        {hives.length === 0 && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[var(--surface-secondary)]/80 backdrop-blur-xs space-y-2">
+            <MapPin size={24} className="text-[var(--text-secondary)] opacity-60" />
+            <p className="text-xs font-semibold text-[var(--text-primary)]">No Registered Hive Nodes</p>
+            <p className="text-[11px] text-[var(--text-secondary)] max-w-xs">
+              Add your first Smart Hive to visualize spatial placement across your apiary grid.
+            </p>
+          </div>
+        )}
+
+        {/* Hover info tooltip card */}
         {hoveredHive && (
-          <div className="absolute top-3 right-3 bg-[var(--surface)] p-3 rounded-xl border border-[var(--border)] shadow-lg text-xs space-y-0.5 pointer-events-none animate-fade-in">
-            <div className="flex items-center gap-1.5 font-serif font-bold text-[var(--text-primary)]">
-              <span>Hive {hoveredHive.id}</span>
-              <span className={`text-[10px] px-2 py-0.2 rounded-full font-sans font-bold ${
-                hoveredHive.status === 'Healthy' ? 'text-green-600 bg-green-500/10' :
-                hoveredHive.status === 'Watch' ? 'text-amber-500 bg-amber-500/10' : 'text-red-500 bg-red-500/10'
-              }`}>
-                {getLocalizedStatus(hoveredHive.status)}
-              </span>
+          <div className="absolute bottom-3 left-3 right-3 bg-[var(--surface)]/95 backdrop-blur-md p-3 rounded-xl border border-[var(--border)] shadow-lg flex items-center justify-between text-xs z-20 animate-fade-in pointer-events-none">
+            <div className="flex items-center gap-3">
+              <span
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ backgroundColor: getStatusColor(hoveredHive.status) }}
+              />
+              <div>
+                <span className="font-bold text-[var(--text-primary)] font-serif">{hoveredHive.id} • {hoveredHive.name}</span>
+                <span className="text-[var(--text-secondary)] block text-[10px]">
+                  {hoveredHive.location} • Status: {getLocalizedStatus(hoveredHive.status)}
+                </span>
+              </div>
             </div>
-            <p className="text-[11px] text-[var(--text-secondary)]">{t.smartHives.temp}: {hoveredHive.temp}°C • {hoveredHive.weight} kg</p>
-            <p className="text-[10px] text-[var(--accent)] font-medium pt-0.5">{t.overview.clickTelemetry}</p>
+            <span className="text-[var(--accent)] font-medium text-[11px] flex items-center gap-1">
+              View Hive <ArrowRight size={11} />
+            </span>
           </div>
         )}
       </div>
 
-      <div className="flex items-center justify-between mt-4 pt-3 border-t border-[var(--border)] text-xs text-[var(--text-secondary)]">
-        <div className="flex gap-4">
-          <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[var(--success)]"></span> {t.common.healthy} (4)</div>
-          <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[var(--warning)]"></span> {t.common.watch} (2)</div>
-          <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[var(--danger)]"></span> {t.common.inspect} (1)</div>
+      <div className="flex items-center justify-between mt-4 text-xs">
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--success)' }} />
+            <span className="text-[var(--text-secondary)]">{t.common.healthy}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--warning)' }} />
+            <span className="text-[var(--text-secondary)]">{t.common.watch}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--danger)' }} />
+            <span className="text-[var(--text-secondary)]">{t.common.inspect}</span>
+          </div>
         </div>
-        <button 
+        <button
           onClick={() => navigate('/smart-hives')}
-          className="text-[var(--accent)] hover:underline flex items-center gap-1 font-medium hidden sm:flex"
+          className="text-[var(--accent)] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
         >
-          <span>{t.overview.all24Hives}</span>
+          <span>{t.nav.viewApiary}</span>
           <ArrowRight size={12} />
         </button>
       </div>
